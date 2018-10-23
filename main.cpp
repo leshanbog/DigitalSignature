@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "impl.h"
 
 
@@ -8,9 +10,9 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 	
 	if (strcmp(argv[1], "sign") == 0)
 	{
-		command = 1;
 		if (argc != 4 && argc != 6)
 			return false;
+		argc == 4 ? command = 1 : command = 2;
 		args.m_fileName = argv[2];
 		args.m_password= argv[3];
 
@@ -21,7 +23,7 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 	}
 	else if (strcmp(argv[1], "verify") == 0)
 	{
-		command = 2;
+		command = 3;
 		if (argc != 5)
 			return false;
 		args.m_fileName = argv[2];
@@ -30,7 +32,7 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 	}
 	else if (strcmp(argv[1], "generate") == 0)
 	{
-		command = 3;
+		command = 4;
 		args.m_password = argv[2];
 	}
 	else if (strcmp(argv[1], "help") != 0)
@@ -43,30 +45,9 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 
 std::string Execute(const int& command, const Arguments& args)
 {
-	std::string result;
-	switch (command)
-	{
-		case 0:
-		{
-			result = SignCommand(args);	
-		}
-		break;
-		case 1:
-		{
-			result = VerifyCommand(args);	
-		}
-		break;
-		case 2:
-		{
-			result = GenerateCommand(args);
-		}
-		break;
-		case 3:
-		{
-			result = HelpCommang();
-		}
-		break;
-	}
+	auto cmd = std::unique_ptr<ICommand>(CreateCommand(command, args));
+	auto result = cmd->Do();
+	return result;
 }
 
 int main(int argc, char *argv[])
@@ -83,7 +64,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			std::cout << "Wrong commang!\n" + HelpCommang();
+			std::cout << "Wrong commang!\nType \"ds help\" to get help";
 		}
 	}
 	catch (...)
