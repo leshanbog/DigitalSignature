@@ -13,12 +13,12 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 		if (argc != 4 && argc != 6)
 			return false;
 		argc == 4 ? command = 1 : command = 2;
-		args.m_fileName = argv[2];
+		args.m_filePath = argv[2];
 		args.m_password= argv[3];
 
 		if (argc == 6)
 		{
-			args.m_privateKeyName = argv[5];
+			args.m_privateKeyPath = argv[5];
 		}
 	}
 	else if (strcmp(argv[1], "verify") == 0)
@@ -26,9 +26,9 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 		command = 3;
 		if (argc != 5)
 			return false;
-		args.m_fileName = argv[2];
-		args.m_signatureFileName = argv[3];
-		args.m_publicKeyName = argv[4];
+		args.m_filePath = argv[2];
+		args.m_signatureFilePath = argv[3];
+		args.m_publicKeyPath = argv[4];
 	}
 	else if (strcmp(argv[1], "generate") == 0)
 	{
@@ -43,7 +43,7 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 }
 
 
-std::string Execute(const int& command, const Arguments& args)
+std::string Execute(const int& command, Arguments& args)
 {
 	auto cmd = std::unique_ptr<ICommand>(CreateCommand(command, args));
 	auto result = cmd->Do();

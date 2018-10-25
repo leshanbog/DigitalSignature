@@ -1,20 +1,10 @@
 #include "impl.h"
-#include <fstream>
+
 #include <vector>
 
-using std::vector;
-
-typedef uint64_t hash;
-typedef uint64_t key;
-
-hash GetFileHash(const vector<char>& str)
-{
-	// TODO: implement
-	return 5;
-}
 
 
-ICommand* CreateCommand(const int& commandNumber, const Arguments& args)
+ICommand* CreateCommand(const int& commandNumber, Arguments& args)
 {
 	switch (commandNumber)
 	{
@@ -34,23 +24,34 @@ ICommand* CreateCommand(const int& commandNumber, const Arguments& args)
 
 
 
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
-std::string SignCommand(const Arguments& args)
+VerifyCommand::VerifyCommand(Arguments& args) :
+	m_filePath(std::move(args.m_filePath)),
+	m_signaturePath(std::move(args.m_signatureFilePath)),
+	m_publicKeyPath(std::move(args.m_publicKeyPath)) {}
+
+std::string VerifyCommand::Do()
 {
-    std::ifstream fileToSign(args.m_fileName, std::ios::binary);
-    const vector<char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+	std::cout << "Verify do\n";
 
-    hash fileHash = GetFileHash(fileCharacters);
-
-    return "sign finished";
+	return "verification done";
 }
-
 
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
+GenerateCommand::GenerateCommand(Arguments& args) : 
+	GenerationKeyPair(std::move(args.m_password)) {}
+
+std::string GenerateCommand::Do()
+{
+	PerformGeneration();
+	return "generation done";
+}
 
 
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
 
 std::string HelpCommand::Do()
