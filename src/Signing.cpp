@@ -3,17 +3,22 @@
 
 #include <fstream>
 #include <vector>
+#include <functional>
 
 
 Signing::Signing(Arguments& args) :
     m_filePath(std::move(args.m_filePath)),
-	PasswordNeeded(std::forward<std::string>(args.m_password)) {}
+    PasswordNeeded(std::forward<std::string>(args.m_password)) {}
 
 
 hash Signing::GetFileHash(const std::vector<byte>& str)
 {
-	// TODO: implement
-	return 5;
+    hash h = 0;
+    for (size_t i = 0; i < str.size(); ++i)
+    {
+        h ^= std::hash<byte>{}(str[i]);
+    }
+    return h;
 }
 
 
@@ -26,47 +31,56 @@ std::string Signing::MakeSignatureFileName()
     if (end < 0)
         return m_filePath + "_signed";
     else
-        return m_filePath.substr(0, end) + "_signed." + m_filePath.substr(end+1, m_filePath.size() - end - 1);
+        return m_filePath.substr(0, end) + "_signature";
 }
 
 
-Signature Signing::CreateSignature(const std::vector<byte>& fileCharacters, const Key& pk)
+Signature Signing::CreateSignature(const hash& fileHash, const Key& pk)
 {
-    Signature signature;
-    for (size_t i = 0; i < fileCharacters.size(); ++i)
-    {
-        // TODO: make real signature
-        signature ^= Power(fileCharacters[i], pk); 
-    }
-    return signature;
+    return Power(fileHash, pk);
 }
 
 
-byte Signing::Power(byte m, const Key& pk)
+hash Signing::Power(const hash& fileHash, const Key& pk)
 {
-    byte res = m;
-    for (uint64_t i = 1; i < pk.exp; ++i)
+    hash res = fileHash;
+    for (uint32_t i = 1; i < pk.exp; ++i)
     {
         // TODO: expand return value
-        res = (res * m) % pk.n;
+        res = (res * fileHash) % pk.n;
     }
     return res;
 }
+
+std::vector<byte> Signing::ReadFile()
+{
+    std::ifstream fileToSign(m_filePath, std::ios::binary);
+    const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+    fileToSign.close();
+    return fileCharacters;
+}
+
+void Signing::SaveSignature(const Signature& signature)
+{
+    std::ofstream foutSignature(MakeSignatureFileName());
+    foutSignature << signature;
+    foutSignature.close();
+}
+
 
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
 
 SignNotGenerateCommand::SignNotGenerateCommand(Arguments& args) :
-	Signing(args), 
-	m_privateKeyPath(std::move(args.m_privateKeyPath)) {}
+    Signing(args), 
+    m_privateKeyPath(std::move(args.m_privateKeyPath)) {}
 
 std::string SignNotGenerateCommand::Do()
-{
-    // read file
-    std::ifstream fileToSign(m_filePath, std::ios::binary);
-    const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
-    fileToSign.close();
+{ 
+    const auto fileCharacters = ReadFile();
+    const hash fileHash = GetFileHash(fileCharacters);
+    std::cout << "DEBUG: file hash = " << fileHash << '\n';
 
     // read private key
     std::ifstream inputPrivateKey(m_privateKeyPath);
@@ -74,13 +88,9 @@ std::string SignNotGenerateCommand::Do()
     inputPrivateKey >> pk.exp >> pk.n;
     inputPrivateKey.close();
 
-    // create signature
-    const auto signature = CreateSignature(fileCharacters, pk);
 
-    // save signature
-    std::ofstream foutSignature(MakeSignatureFileName());
-    foutSignature << signature;
-    foutSignature.close();
+    const auto signature = CreateSignature(fileHash, pk);
+    SaveSignature(signature);
 
     return "sign without generating finished";
 }
@@ -90,31 +100,20 @@ std::string SignNotGenerateCommand::Do()
 
 
 SignAndGenerateCommand::SignAndGenerateCommand(Arguments& args) :
-	Signing(args),
+    Signing(args),
     GenerationKeyPair(std::move(args.m_password)) {}
 
 std::string SignAndGenerateCommand::Do()
 {
-    // TODO: remove copypaste (move duplicate to parent)
+    // TODO: code duplication, again...
+    const auto fileCharacters = ReadFile();
+    const hash fileHash = GetFileHash(fileCharacters);
 
-    // read file
-    std::ifstream fileToSign(m_filePath, std::ios::binary);
-    const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
-    fileToSign.close();
-
-    // generate keys
-    const Key pk = PerformGeneration();
+    const Key pk = PerformGenerationAndGetPrivateKey();
     
+    const auto signature = CreateSignature(fileHash, pk);
+    SaveSignature(signature);
 
-    // create signature
-    auto signature = CreateSignature(fileCharacters, pk);
-
-    // save signature
-    std::ofstream foutSignature(MakeSignatureFileName());
-    foutSignature << signature;
-    foutSignature.close();
-
-
-	return "sign and generating finished";
+    return "sign and generating finished";
 }
 

@@ -14,7 +14,7 @@ std::string PasswordNeeded::EncodePrivateKey(const Key& pk, const std::string& m
 Key PasswordNeeded::DecodePrivateKey(const std::string& pk, const std::string& m_password)
 {
     int spaceIndex = pk.find(" ");
-    return { stoull(pk.substr(0, spaceIndex)), stoull(pk.substr(spaceIndex + 1, pk.size() - spaceIndex - 1))};
+    return { (uint32_t)stoul(pk.substr(0, spaceIndex)), (uint32_t)stoul(pk.substr(spaceIndex + 1, pk.size() - spaceIndex - 1))};
 }
 
 
@@ -23,16 +23,17 @@ primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
 {
     // TODO: implement
     static int i = 0;
-    uint32_t temp[]= {3336377179, 908278081};
+    // uint16_t temp[]= {39023, 53129};
+    uint16_t temp[]= {5, 7};
     return temp[(i++) % 2];
 }
 
 
 
-uint64_t GenerationKeyPair::ChoosePublicExponent(uint64_t phi)
+uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 {
     return 65537;
-    uint64_t publicExponent = (rand() % (phi - 999) ) + 999;
+    uint32_t publicExponent = (rand() % (phi - 999) ) + 999;
     while (Gcd(publicExponent, phi) != 1)
     {
         publicExponent = (rand() % (phi - 999) ) + 999;
@@ -41,38 +42,38 @@ uint64_t GenerationKeyPair::ChoosePublicExponent(uint64_t phi)
 }
 
 
-uint64_t GenerationKeyPair::FindPrivateExponent(uint64_t publicExponent, uint64_t phi)
+uint32_t GenerationKeyPair::FindPrivateExponent(uint64_t publicExponent, uint64_t phi)
 {
     uint64_t d = 2;
-    while ((d * publicExponent) % phi != 1)
+    while (((d * publicExponent) % phi) != 1)
     {
         ++d;
     }
     return d;
 }
 
-Key GenerationKeyPair::PerformGeneration()
+Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
 {
     primeNumber p = GenerateRandomPrimeNumber();
-	primeNumber q = GenerateRandomPrimeNumber();
-	while (p == q)
-	{
-		q = GenerateRandomPrimeNumber();
-	}
+    primeNumber q = GenerateRandomPrimeNumber();
+    while (p == q)
+    {
+        q = GenerateRandomPrimeNumber();
+    }
 
-	module n = p * q;
-	uint64_t phi = (p-1)*(q-1);
-	uint64_t publicExponent = ChoosePublicExponent(phi);
-	uint64_t privateExponent = FindPrivateExponent(publicExponent, phi);
+    module n = p * q;
+    uint32_t phi = (p-1)*(q-1);
+    uint32_t publicExponent = ChoosePublicExponent(phi);
+    uint32_t privateExponent = FindPrivateExponent(publicExponent, phi);
 
-    Key privateKey({privateExponent, n});
-	std::ofstream foutPrKey(m_privateKeyPath);
-	foutPrKey << EncodePrivateKey(privateKey, m_password);
-	foutPrKey.close();
+    Key privateKey(privateExponent, n);
+    std::ofstream foutPrKey(m_privateKeyPath);
+    foutPrKey << EncodePrivateKey(privateKey, m_password);
+    foutPrKey.close();
 
-	std::ofstream foutPubKey(m_publicKeyPath);
-	foutPubKey << publicExponent << ' ' << n;
-	foutPubKey.close();
+    std::ofstream foutPubKey(m_publicKeyPath);
+    foutPubKey << publicExponent << ' ' << n;
+    foutPubKey.close();
 
     return privateKey;
 }
