@@ -12,7 +12,6 @@ ICommand* CreateCommand(const int& commandNumber, Arguments& args);
 
 
 
-
 class GenerateCommand : public ICommand, public GenerationKeyPair
 {
 public:

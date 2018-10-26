@@ -12,7 +12,7 @@ typedef uint32_t module;
 class PasswordNeeded
 {
 protected:
-    PasswordNeeded(std::string&& pass) : m_password(pass) {};
+    PasswordNeeded(std::string&& pass) : m_password(std::move(pass)) {};
     std::string EncodePrivateKey(const Key& pk, const std::string& m_password);
     Key DecodePrivateKey(const std::string& pk, const std::string& m_password);
 
@@ -27,7 +27,7 @@ protected:
     GenerationKeyPair(std::string&& pass) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
-        PasswordNeeded(std::forward<std::string>(pass)) {};
+        PasswordNeeded(std::move(pass)) {};
 
     std::string m_privateKeyPath;
     std::string m_publicKeyPath;

@@ -8,7 +8,7 @@
 
 Signing::Signing(Arguments& args) :
     m_filePath(std::move(args.m_filePath)),
-    PasswordNeeded(std::forward<std::string>(args.m_password)) {}
+    PasswordNeeded(std::move(args.m_password)) {}
 
 
 hash Signing::GetFileHash(const std::vector<byte>& str)
