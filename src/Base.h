@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ByteStorage.h"
+
 #include <string>
 
 struct Arguments
@@ -11,9 +13,6 @@ struct Arguments
     std::string m_password;
 };
 
-typedef uint32_t hash;
-typedef unsigned char byte;
-typedef uint32_t Signature;
 
 struct Key
 {
@@ -22,7 +21,6 @@ struct Key
     uint32_t exp;
     uint32_t n;
 };
-
 
 
 class ICommand

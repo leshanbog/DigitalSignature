@@ -1,29 +1,29 @@
 #pragma once
 
-#include <string>
-
-
 #include "GenerationKeyPair.h"
-#include "Base.h"
+#include "rsa_helper.h"
+
 
 
 class Signing : public PasswordNeeded, public ICommand
 {
 protected:
     Signing(Arguments& args);
+
     virtual std::string Do() = 0;
+    void PerformSigning();
+    virtual Key ObtainPrivateKey() = 0;
 
     std::vector<byte> ReadFile();
-    Signature CreateSignature(const hash& fileHash, const Key& pk);
     void SaveSignature(const Signature& signature);
 
-
-    hash GetFileHash(const std::vector<byte>& str);
     std::string MakeSignatureFileName();
 
-    hash Power(const hash& fileHash, const Key& pk);
+protected:
     std::string m_filePath;
+    rsa_helper m_rsaHelper;
 };
+
 
 
 class SignNotGenerateCommand : public Signing
@@ -31,11 +31,12 @@ class SignNotGenerateCommand : public Signing
 public:
     SignNotGenerateCommand(Arguments& args);
     virtual std::string Do() override;
-
+    virtual Key ObtainPrivateKey() override;
 
 private:
     std::string m_privateKeyPath;
 };
+
 
 
 class SignAndGenerateCommand : public Signing, public GenerationKeyPair
@@ -43,5 +44,5 @@ class SignAndGenerateCommand : public Signing, public GenerationKeyPair
 public:
     SignAndGenerateCommand(Arguments& args);
     virtual std::string Do() override;
-
+    virtual Key ObtainPrivateKey() override;
 };

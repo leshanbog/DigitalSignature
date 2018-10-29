@@ -2,7 +2,6 @@
 
 
 #include <fstream>
-#include <functional>
 #include <vector>
 
 
@@ -11,18 +10,17 @@ VerifyCommand::VerifyCommand(Arguments& args) :
     m_signaturePath(std::move(args.m_signatureFilePath)),
     m_publicKeyPath(std::move(args.m_publicKeyPath)) {}
 
-
 std::string VerifyCommand::Do()
 {
     std::cout << "Verify do\n";
     const auto fileCharacters = ReadFile();
-    const hash fileHash = GetFileHash(fileCharacters);
+    const Hash fileHash(fileCharacters);
     std::cout << "DEBUG: file hash = " << fileHash << '\n';
 
     const auto signature = GetSignature();
     const auto publicKey = GetPublicKey();
 
-    const auto fileHashPreimage = CalculatePreimage(publicKey, signature);
+    const auto fileHashPreimage = m_rsaHelper.CalculatePreimage(signature, publicKey);
 
     if (fileHashPreimage != fileHash)
     {
@@ -41,49 +39,30 @@ Key VerifyCommand::GetPublicKey()
     std::ifstream inputPublicKey(m_publicKeyPath);
     Key pk;
     inputPublicKey >> pk.exp >> pk.n;
+    inputPublicKey.close();
     return pk;
 }
-
 
 Signature VerifyCommand::GetSignature()
 {
     std::ifstream fileSignature(m_signaturePath);
     Signature signature;
     fileSignature >> signature;
+    fileSignature.close();
     return signature;
-}
-
-
-hash VerifyCommand::GetFileHash(const std::vector<byte>& str)
-{
-    hash h = 0;
-    for (size_t i = 0; i < str.size(); ++i)
-    {
-        h ^= std::hash<byte>{}(str[i]);
-    }
-    return h;
 }
 
 std::vector<byte> VerifyCommand::ReadFile()
 {
-    std::ifstream fileToSign(m_filePath, std::ios::binary);
-    const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
-    fileToSign.close();
-    return fileCharacters;
-}
-
-hash VerifyCommand::CalculatePreimage(const Key& publicKey, const Signature& signature)
-{
-    return Power(signature, publicKey);
-}
-
-
-hash VerifyCommand::Power(const Signature& signature, const Key& publicKey)
-{
-    hash res = signature;
-    for (uint32_t i = 1; i < publicKey.exp; ++i)
+    try
     {
-        res = (res * signature) % publicKey.n;
+        std::ifstream fileToSign(m_filePath, std::ios::binary);
+        const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+        fileToSign.close();
+        return fileCharacters;
     }
-    return res;
+    catch (std::bad_alloc& err)
+    {
+        throw std::runtime_error("File is too big!\n");
+    }
 }
