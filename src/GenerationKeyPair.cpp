@@ -21,18 +21,43 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& pk, const std::string& m
 
 primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
 {
-    // TODO: implement
-    static int i = 0;
-    // uint16_t temp[]= {39023, 53129};
-    uint16_t temp[]= {5, 7};
-    return temp[(i++) % 2];
+    primeNumber p = rand() % 32767 + 32769;
+    while (!IsPrime(p))
+    {
+        p = rand() % 32767 + 32769;
+    }
+    return p;
 }
 
-
+bool GenerationKeyPair::IsPrime(const primeNumber& p)
+{
+    if (p % 2 == 0 || 
+        p % 3 == 0 ||
+        p % 5 == 0 ||
+        p % 7 == 0 ||
+        p % 11 == 0 ||
+        p % 13 == 0 ||
+        p % 17 == 0 ||
+        p % 19 == 0 ||
+        p % 23 == 0 ||
+        p % 29 == 0 ||
+        p % 31 == 0 ||
+        p % 37 == 0 ||
+        p % 41 == 0 ||
+        p % 43 == 0)
+            return false;
+    uint32_t l = sqrt(p) + 1;
+    for (uint32_t d = 47; d < l; d += 2)
+    {
+        if (p % d == 0)
+            return false;
+    }
+    return true;
+}
 
 uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 {
-    return 65537;
+    //return 65537;
     uint32_t publicExponent = (rand() % (phi - 999) ) + 999;
     while (Gcd(publicExponent, phi) != 1)
     {
@@ -54,6 +79,7 @@ uint32_t GenerationKeyPair::FindPrivateExponent(uint64_t publicExponent, uint64_
 
 Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
 {
+    // TODO: maybe do concurrent
     primeNumber p = GenerateRandomPrimeNumber();
     primeNumber q = GenerateRandomPrimeNumber();
     while (p == q)
@@ -61,6 +87,7 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
         q = GenerateRandomPrimeNumber();
     }
 
+    std::cout << p << ' ' << q  << '\n';
     module n = p * q;
     uint32_t phi = (p-1)*(q-1);
     uint32_t publicExponent = ChoosePublicExponent(phi);

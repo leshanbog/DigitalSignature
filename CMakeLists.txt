@@ -6,7 +6,6 @@ set(SOURCES
 	src/GenerationKeyPair.cpp
 	src/Signing.cpp
 	src/Verification.cpp
-	src/rsa_helper.cpp
 	src/ByteStorage.cpp
 )
 

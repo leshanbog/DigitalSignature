@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base.h"
-#include "rsa_helper.h"
 
 #include <iostream>
 
@@ -13,12 +12,11 @@ public:
     virtual std::string Do() override;
 
     Signature GetSignature();
-    std::vector<byte> ReadFile();
+    std::vector<unsigned char> ReadFile();
     Key GetPublicKey();
 
 private:
     std::string m_filePath;
     std::string m_signaturePath;
     std::string m_publicKeyPath;
-    rsa_helper m_rsaHelper;
 };

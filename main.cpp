@@ -77,5 +77,4 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-
-// TODO: treat bad_alloc when file is too big
+// TODO: add encryption, add concurrency

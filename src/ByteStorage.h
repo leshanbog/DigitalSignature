@@ -3,24 +3,22 @@
 #include <fstream>
 
 
-typedef unsigned char byte;
+typedef uint32_t byte;
 
-const size_t BYTE_STORAGE_SIZE = 1;
+const size_t BYTE_STORAGE_SIZE = 5;
 
 
 struct ByteStorage
 {
-    ByteStorage(const std::vector<byte>& stream);
+    ByteStorage(const std::vector<unsigned char>& stream);
     ByteStorage();
-
 
     ByteStorage PowMod(uint32_t exp, uint32_t n) const;
 
     bool operator==(const ByteStorage& other) const;
-    bool operator!=(const ByteStorage& other) const;
 
-    friend std::ostream& operator<<(std::ostream& os, const ByteStorage& bs);
-    friend std::istream& operator>>(std::istream& is, ByteStorage& bs);
+    friend std::ofstream& operator<<(std::ofstream& os, const ByteStorage& bs);
+    friend std::ifstream& operator>>(std::ifstream& is, ByteStorage& bs);
 
     byte m_data[BYTE_STORAGE_SIZE];
 };

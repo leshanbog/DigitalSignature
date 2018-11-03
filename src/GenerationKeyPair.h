@@ -33,6 +33,7 @@ protected:
     std::string m_publicKeyPath;
 
     primeNumber GenerateRandomPrimeNumber();
+    bool IsPrime(const primeNumber& p);
     uint32_t ChoosePublicExponent(uint32_t phi);
     uint32_t FindPrivateExponent(uint64_t publicExponent, uint64_t phi);
     Key PerformGenerationAndGetPrivateKey();

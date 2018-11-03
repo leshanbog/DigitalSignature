@@ -25,10 +25,10 @@ std::string Signing::MakeSignatureFileName()
         return m_filePath.substr(0, end) + "_signature";
 }
 
-std::vector<byte> Signing::ReadFile()
+std::vector<unsigned char> Signing::ReadFile()
 {
     std::ifstream fileToSign(m_filePath, std::ios::binary);
-    const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+    const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
     fileToSign.close();
     std::cout << "file size = " << fileCharacters.size() << '\n';
     return fileCharacters;
@@ -43,13 +43,16 @@ void Signing::SaveSignature(const Signature& signature)
 
 void Signing::PerformSigning()
 {
+    // TODO: reading file + calculating hash can be performed concurrently with obtaining key
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
-    std::cout << "DEBUG: file hash = " << fileHash << '\n';
+    std::cout << "DEBUG: file hash = " << (uint32_t)fileHash.m_data[0] << ' ' << (uint32_t)fileHash.m_data[1] << ' ' << (uint32_t)fileHash.m_data[2] << ' ' << (uint32_t)fileHash.m_data[3] << ' ' << (uint32_t)fileHash.m_data[4] << ' ' <<  '\n';
 
     Key pk = ObtainPrivateKey();
-
-    const auto signature = m_rsaHelper.CreateSignature(fileHash, pk);
+    
+    // creating signature
+    const Signature signature = fileHash.PowMod(pk.exp, pk.n);
+    std::cout << "DEBUG: file sign = " << (uint32_t)signature.m_data[0] << ' ' << (uint32_t)signature.m_data[1] << ' ' << (uint32_t)signature.m_data[2] << ' ' << (uint32_t)signature.m_data[3] << ' ' << (uint32_t)signature.m_data[4] << ' ' <<  '\n';
     SaveSignature(signature);
 }
 

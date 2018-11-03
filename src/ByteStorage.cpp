@@ -12,20 +12,24 @@ ByteStorage::ByteStorage()
 }
 
 
-ByteStorage::ByteStorage(const std::vector<byte>& stream)
+ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
 {
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        m_data[i] = static_cast<byte>(0);
+        m_data[i] = static_cast<byte>(stream.size()+i);
 
     for (size_t i = 0; i < stream.size(); ++i)
     {
         auto h = std::hash<byte>{}(stream[i]);
-        m_data[i % BYTE_STORAGE_SIZE] ^= static_cast<byte>(h % 256);
+        m_data[i % BYTE_STORAGE_SIZE] ^= stream[i] + 0x9e3779b9 + (m_data[i % BYTE_STORAGE_SIZE] << 6) + (m_data[i % BYTE_STORAGE_SIZE] >> 2);
     }
+    // hash must be smaller then module (n = p*q)
+    for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
+        m_data[i] >>= 1;
 }
 
 ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const
 {
+    //TODO: concurrency
     ByteStorage ans;
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
     {
@@ -35,11 +39,10 @@ ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const
         {
             power = (power * factor) % n;
         }
-        ans.m_data[i] = static_cast<byte>(power % 256);
+        ans.m_data[i] = static_cast<byte>(power);
     }
     return ans;
 }
-
 
 bool ByteStorage::operator==(const ByteStorage& other) const
 {
@@ -50,26 +53,17 @@ bool ByteStorage::operator==(const ByteStorage& other) const
 }
 
 
-bool ByteStorage::operator!=(const ByteStorage& other) const
+std::ofstream& operator<<(std::ofstream& os, const ByteStorage& bs)
 {
-    return !operator==(other);
-}
-
-std::ostream& operator<<(std::ostream& os, const ByteStorage& bs)
-{
-    std::string s = "";
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        s += bs.m_data[i];
-    
-    os << s;
+        os << bs.m_data[i] << ' '; 
+
     return os;
 }
 
-std::istream& operator>>(std::istream& is, ByteStorage& bs)
+std::ifstream& operator>>(std::ifstream& is, ByteStorage& bs)
 {
-    std::string s;
-    is >> s;
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        bs.m_data[i] = s[i];
+        is >> bs.m_data[i];
     return is;
 }

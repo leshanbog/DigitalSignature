@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GenerationKeyPair.h"
-#include "rsa_helper.h"
 
 
 
@@ -14,14 +13,13 @@ protected:
     void PerformSigning();
     virtual Key ObtainPrivateKey() = 0;
 
-    std::vector<byte> ReadFile();
+    std::vector<unsigned char> ReadFile();
     void SaveSignature(const Signature& signature);
 
     std::string MakeSignatureFileName();
 
 protected:
     std::string m_filePath;
-    rsa_helper m_rsaHelper;
 };
 
 

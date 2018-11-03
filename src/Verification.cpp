@@ -15,20 +15,25 @@ std::string VerifyCommand::Do()
     std::cout << "Verify do\n";
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
-    std::cout << "DEBUG: file hash = " << fileHash << '\n';
+    std::cout << "DEBUG: file hash = " << (uint32_t)fileHash.m_data[0] << ' ' << (uint32_t)fileHash.m_data[1] << ' ' << (uint32_t)fileHash.m_data[2] << ' ' << (uint32_t)fileHash.m_data[3] << ' ' << (uint32_t)fileHash.m_data[4] << ' ' <<  '\n';
 
     const auto signature = GetSignature();
+    std::cout << "DEBUG: file sign = " << (uint32_t)signature.m_data[0] << ' ' << (uint32_t)signature.m_data[1] << ' ' << (uint32_t)signature.m_data[2] << ' ' << (uint32_t)signature.m_data[3] << ' ' << (uint32_t)signature.m_data[4] << ' ' <<  '\n';
     const auto publicKey = GetPublicKey();
 
-    const auto fileHashPreimage = m_rsaHelper.CalculatePreimage(signature, publicKey);
+    // calculate preimage
+    const Hash fileHashPreimage = signature.PowMod(publicKey.exp, publicKey.n);
 
-    if (fileHashPreimage != fileHash)
+    std::cout << "DEBUG: file hash preimage = " << (uint32_t)fileHashPreimage.m_data[0] << ' ' << (uint32_t)fileHashPreimage.m_data[1] << ' ' << (uint32_t)fileHashPreimage.m_data[2] << ' ' << (uint32_t)fileHashPreimage.m_data[3] << ' ' << (uint32_t)fileHashPreimage.m_data[4] << ' ' <<  '\n';
+  
+
+    if (fileHashPreimage == fileHash)
     {
-        std::cout << "Signature is not valid!\n";
+        std::cout << "Signature is valid!\n";
     }
     else
     {
-        std::cout << "Signature is valid!\n";
+        std::cout << "Signature is not valid!\n";
     }
 
     return "verification done";
@@ -52,12 +57,12 @@ Signature VerifyCommand::GetSignature()
     return signature;
 }
 
-std::vector<byte> VerifyCommand::ReadFile()
+std::vector<unsigned char> VerifyCommand::ReadFile()
 {
     try
     {
         std::ifstream fileToSign(m_filePath, std::ios::binary);
-        const std::vector<byte> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+        const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
         fileToSign.close();
         return fileCharacters;
     }
