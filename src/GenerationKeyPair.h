@@ -3,8 +3,9 @@
 
 #include "Base.h"
 
-#include <iostream>
 #include <string>
+// TODO: delete
+#include <iostream>
 
 typedef uint16_t primeNumber;
 typedef uint32_t module;
@@ -12,10 +13,17 @@ typedef uint32_t module;
 class PasswordNeeded
 {
 protected:
-    PasswordNeeded(std::string&& pass) : m_password(std::move(pass)) {};
+    PasswordNeeded(std::string& pass) : m_password(pass) {};
     std::string EncodePrivateKey(const Key& pk, const std::string& m_password);
     Key DecodePrivateKey(const std::string& pk, const std::string& m_password);
 
+private:
+    std::string GammaChiper(const std::string key, const std::string& pass);
+    std::vector<int> GeneratePerm(const std::string& word);
+    std::string PermutationChiperDecode(const std::string key, const std::string& pass);
+    std::string PermutationChiperEncode(const std::string key, const std::string& pass);
+
+protected:
     std::string m_password;
 };
 
@@ -24,10 +32,10 @@ protected:
 class GenerationKeyPair : public PasswordNeeded
 {
 protected:
-    GenerationKeyPair(std::string&& pass) : 
+    GenerationKeyPair(std::string& pass) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
-        PasswordNeeded(std::move(pass)) {};
+        PasswordNeeded(pass) {};
 
     std::string m_privateKeyPath;
     std::string m_publicKeyPath;

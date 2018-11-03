@@ -77,4 +77,4 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// TODO: add encryption, add concurrency
+// TODO: add concurrency, remove coping in constructors

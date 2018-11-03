@@ -11,7 +11,7 @@
 
 Signing::Signing(Arguments& args) :
     m_filePath(std::move(args.m_filePath)),
-    PasswordNeeded(std::move(args.m_password)) {}
+    PasswordNeeded(args.m_password) {}
 
 std::string Signing::MakeSignatureFileName()
 {
@@ -46,13 +46,13 @@ void Signing::PerformSigning()
     // TODO: reading file + calculating hash can be performed concurrently with obtaining key
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
-    std::cout << "DEBUG: file hash = " << (uint32_t)fileHash.m_data[0] << ' ' << (uint32_t)fileHash.m_data[1] << ' ' << (uint32_t)fileHash.m_data[2] << ' ' << (uint32_t)fileHash.m_data[3] << ' ' << (uint32_t)fileHash.m_data[4] << ' ' <<  '\n';
+    //std::cout << "DEBUG: file hash = " << (uint32_t)fileHash.m_data[0] << ' ' << (uint32_t)fileHash.m_data[1] << ' ' << (uint32_t)fileHash.m_data[2] << ' ' << (uint32_t)fileHash.m_data[3] << ' ' << (uint32_t)fileHash.m_data[4] << ' ' <<  '\n';
 
     Key pk = ObtainPrivateKey();
     
     // creating signature
     const Signature signature = fileHash.PowMod(pk.exp, pk.n);
-    std::cout << "DEBUG: file sign = " << (uint32_t)signature.m_data[0] << ' ' << (uint32_t)signature.m_data[1] << ' ' << (uint32_t)signature.m_data[2] << ' ' << (uint32_t)signature.m_data[3] << ' ' << (uint32_t)signature.m_data[4] << ' ' <<  '\n';
+    //std::cout << "DEBUG: file sign = " << (uint32_t)signature.m_data[0] << ' ' << (uint32_t)signature.m_data[1] << ' ' << (uint32_t)signature.m_data[2] << ' ' << (uint32_t)signature.m_data[3] << ' ' << (uint32_t)signature.m_data[4] << ' ' <<  '\n';
     SaveSignature(signature);
 }
 
@@ -83,7 +83,7 @@ Key SignNotGenerateCommand::ObtainPrivateKey()
 
 SignAndGenerateCommand::SignAndGenerateCommand(Arguments& args) :
     Signing(args),
-    GenerationKeyPair(std::move(args.m_password)) {}
+    GenerationKeyPair(args.m_password) {}
 
 std::string SignAndGenerateCommand::Do()
 {

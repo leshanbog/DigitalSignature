@@ -28,7 +28,7 @@ ICommand* CreateCommand(const int& commandNumber, Arguments& args)
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
 GenerateCommand::GenerateCommand(Arguments& args) : 
-    GenerationKeyPair(std::move(args.m_password)) {}
+    GenerationKeyPair(args.m_password) {}
 
 std::string GenerateCommand::Do()
 {

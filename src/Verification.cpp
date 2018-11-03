@@ -15,16 +15,16 @@ std::string VerifyCommand::Do()
     std::cout << "Verify do\n";
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
-    std::cout << "DEBUG: file hash = " << (uint32_t)fileHash.m_data[0] << ' ' << (uint32_t)fileHash.m_data[1] << ' ' << (uint32_t)fileHash.m_data[2] << ' ' << (uint32_t)fileHash.m_data[3] << ' ' << (uint32_t)fileHash.m_data[4] << ' ' <<  '\n';
+    //std::cout << "DEBUG: file hash = " << (uint32_t)fileHash.m_data[0] << ' ' << (uint32_t)fileHash.m_data[1] << ' ' << (uint32_t)fileHash.m_data[2] << ' ' << (uint32_t)fileHash.m_data[3] << ' ' << (uint32_t)fileHash.m_data[4] << ' ' <<  '\n';
 
     const auto signature = GetSignature();
-    std::cout << "DEBUG: file sign = " << (uint32_t)signature.m_data[0] << ' ' << (uint32_t)signature.m_data[1] << ' ' << (uint32_t)signature.m_data[2] << ' ' << (uint32_t)signature.m_data[3] << ' ' << (uint32_t)signature.m_data[4] << ' ' <<  '\n';
+    //std::cout << "DEBUG: file sign = " << (uint32_t)signature.m_data[0] << ' ' << (uint32_t)signature.m_data[1] << ' ' << (uint32_t)signature.m_data[2] << ' ' << (uint32_t)signature.m_data[3] << ' ' << (uint32_t)signature.m_data[4] << ' ' <<  '\n';
     const auto publicKey = GetPublicKey();
 
     // calculate preimage
     const Hash fileHashPreimage = signature.PowMod(publicKey.exp, publicKey.n);
 
-    std::cout << "DEBUG: file hash preimage = " << (uint32_t)fileHashPreimage.m_data[0] << ' ' << (uint32_t)fileHashPreimage.m_data[1] << ' ' << (uint32_t)fileHashPreimage.m_data[2] << ' ' << (uint32_t)fileHashPreimage.m_data[3] << ' ' << (uint32_t)fileHashPreimage.m_data[4] << ' ' <<  '\n';
+    //std::cout << "DEBUG: file hash preimage = " << (uint32_t)fileHashPreimage.m_data[0] << ' ' << (uint32_t)fileHashPreimage.m_data[1] << ' ' << (uint32_t)fileHashPreimage.m_data[2] << ' ' << (uint32_t)fileHashPreimage.m_data[3] << ' ' << (uint32_t)fileHashPreimage.m_data[4] << ' ' <<  '\n';
   
 
     if (fileHashPreimage == fileHash)

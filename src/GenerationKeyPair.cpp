@@ -1,6 +1,8 @@
 
 #include <random>
 #include <fstream>
+#include <functional>
+#include <map>
 
 #include "GenerationKeyPair.h"
 
@@ -8,15 +10,84 @@
 
 std::string PasswordNeeded::EncodePrivateKey(const Key& pk, const std::string& m_password)
 {
-    return std::to_string(pk.exp) + ' ' + std::to_string(pk.n);
+    std::cout << "pass = " << m_password << "\n";
+    std::string key = std::to_string(pk.exp) + ' ' + std::to_string(pk.n);
+    return GammaChiper(key, PermutationChiperEncode(key, m_password));
 }
 
 Key PasswordNeeded::DecodePrivateKey(const std::string& pk, const std::string& m_password)
 {
-    int spaceIndex = pk.find(" ");
-    return { (uint32_t)stoul(pk.substr(0, spaceIndex)), (uint32_t)stoul(pk.substr(spaceIndex + 1, pk.size() - spaceIndex - 1))};
+    std::string decodedKey =  PermutationChiperDecode(pk, GammaChiper(pk, m_password));
+    int spaceIndex = decodedKey.find(" ");
+    return { (uint32_t)stoul(decodedKey.substr(0, spaceIndex)), (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, pk.size() - spaceIndex - 1))};
 }
 
+std::string PasswordNeeded::GammaChiper(const std::string key, const std::string& pass)
+{
+	srand(std::hash<std::string>{}(key));
+	std::string encodedPass = pass;
+	for (int i = 0; i < encodedPass.size(); ++i)
+	{
+		unsigned char c = rand() % 256;
+		encodedPass[i] ^= c;
+	}
+
+	return encodedPass;
+}
+
+std::vector<int> PasswordNeeded::GeneratePerm(const std::string& word)
+{
+	std::vector<int> v(word.size());
+	std::multimap<char, int> m;
+	for (int i = 0; i < word.size(); ++i)
+		m.insert(std::make_pair(word[i], i));
+
+	int k = 0;
+	for (auto& elem : m)
+		v[elem.second] = k++;
+
+	return v;
+}
+
+std::string PasswordNeeded::PermutationChiperDecode(const std::string key, const std::string& pass)
+{
+	std::vector<int> k = GeneratePerm(key);
+
+	std::string decodedPass = pass;
+
+	for (int i = 0; i < pass.size() / k.size(); ++i)
+	{
+		for (int j = 0; j < k.size(); ++j)
+		{
+			decodedPass[i*k.size() + j] = pass[i*k.size()+k[j]];
+		}
+	}
+
+	while (decodedPass[decodedPass.size() - 1] == ' ')
+		decodedPass.erase(decodedPass.begin() + decodedPass.size() - 1);
+	
+	return decodedPass;
+}
+
+std::string PasswordNeeded::PermutationChiperEncode(const std::string key, const std::string& pass)
+{
+	std::vector<int> k = GeneratePerm(key);
+
+	std::string password = pass;
+	while (password.size() % k.size() != 0)
+		password += ' ';
+
+	std::string encodedPass = password;
+	for (int i = 0; i < password.size() / k.size(); ++i) 
+	{
+		for (int j = 0; j < k.size(); ++j)
+		{
+			encodedPass[i*k.size() + k[j]] = password[i*k.size() + j];
+		}
+	}
+
+	return encodedPass;
+}
 
 
 primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
@@ -87,7 +158,6 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
         q = GenerateRandomPrimeNumber();
     }
 
-    std::cout << p << ' ' << q  << '\n';
     module n = p * q;
     uint32_t phi = (p-1)*(q-1);
     uint32_t publicExponent = ChoosePublicExponent(phi);
