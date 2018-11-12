@@ -140,6 +140,7 @@ uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 
 uint32_t GenerationKeyPair::FindPrivateExponent(uint64_t publicExponent, uint64_t phi)
 {
+	// use exgcd for finding inverse
     uint64_t d = 2;
     while (((d * publicExponent) % phi) != 1)
     {
