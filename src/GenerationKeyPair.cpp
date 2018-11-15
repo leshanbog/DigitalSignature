@@ -1,4 +1,3 @@
-
 #include <random>
 #include <fstream>
 #include <functional>
@@ -8,23 +7,24 @@
 
 
 
-std::string PasswordNeeded::EncodePrivateKey(const Key& pk, const std::string& m_password)
+std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 {
-    std::cout << "pass = " << m_password << "\n";
-    std::string key = std::to_string(pk.exp) + ' ' + std::to_string(pk.n);
-    return GammaChiper(key, PermutationChiperEncode(key, m_password));
+    std::cout << "pass =  " << m_password << "\n";
+    std::string data = std::to_string(pk.exp) + " " + std::to_string(pk.n);
+    std::string encodedPass = GammaChiper(m_password, PermutationChiperEncode(m_password, data));
+    return encodedPass;
 }
 
-Key PasswordNeeded::DecodePrivateKey(const std::string& pk, const std::string& m_password)
+Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 {
-    std::string decodedKey =  PermutationChiperDecode(pk, GammaChiper(pk, m_password));
+    std::string decodedKey =  PermutationChiperDecode(m_password, GammaChiper(m_password, data));
     int spaceIndex = decodedKey.find(" ");
-    return { (uint32_t)stoul(decodedKey.substr(0, spaceIndex)), (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, pk.size() - spaceIndex - 1))};
+    return { (uint32_t)stoul(decodedKey.substr(0, spaceIndex)), (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, data.size() - spaceIndex - 1))};
 }
 
 std::string PasswordNeeded::GammaChiper(const std::string key, const std::string& pass)
-{
-	srand(std::hash<std::string>{}(key));
+{   
+    srand(std::hash<std::string>{}(key));
 	std::string encodedPass = pass;
 	for (int i = 0; i < encodedPass.size(); ++i)
 	{
@@ -51,7 +51,7 @@ std::vector<int> PasswordNeeded::GeneratePerm(const std::string& word)
 
 std::string PasswordNeeded::PermutationChiperDecode(const std::string key, const std::string& pass)
 {
-	std::vector<int> k = GeneratePerm(key);
+ 	std::vector<int> k = GeneratePerm(key);
 
 	std::string decodedPass = pass;
 
@@ -140,7 +140,7 @@ uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 
 uint32_t GenerationKeyPair::FindPrivateExponent(uint64_t publicExponent, uint64_t phi)
 {
-	// use exgcd for finding inverse
+	// TODO: use exgcd for finding inverse
     uint64_t d = 2;
     while (((d * publicExponent) % phi) != 1)
     {
@@ -166,7 +166,7 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
 
     Key privateKey(privateExponent, n);
     std::ofstream foutPrKey(m_privateKeyPath);
-    foutPrKey << EncodePrivateKey(privateKey, m_password);
+    foutPrKey << EncodePrivateKey(privateKey);
     foutPrKey.close();
 
     std::ofstream foutPubKey(m_publicKeyPath);

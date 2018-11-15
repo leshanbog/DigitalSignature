@@ -4,7 +4,7 @@
 
 
 
-class Signing : public PasswordNeeded, public ICommand
+class Signing : public ICommand
 {
 protected:
     Signing(Arguments& args);
@@ -24,7 +24,7 @@ protected:
 
 
 
-class SignNotGenerateCommand : public Signing
+class SignNotGenerateCommand : public Signing, public PasswordNeeded
 {
 public:
     SignNotGenerateCommand(Arguments& args);

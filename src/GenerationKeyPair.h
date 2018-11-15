@@ -13,9 +13,9 @@ typedef uint32_t module;
 class PasswordNeeded
 {
 protected:
-    PasswordNeeded(std::string& pass) : m_password(pass) {};
-    std::string EncodePrivateKey(const Key& pk, const std::string& m_password);
-    Key DecodePrivateKey(const std::string& pk, const std::string& m_password);
+    PasswordNeeded(std::string&& pass) : m_password(pass) {};
+    std::string EncodePrivateKey(const Key& pk);
+    Key DecodePrivateKey(const std::string& pk);
 
 private:
     std::string GammaChiper(const std::string key, const std::string& pass);
@@ -35,7 +35,7 @@ protected:
     GenerationKeyPair(std::string& pass) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
-        PasswordNeeded(pass) {};
+        PasswordNeeded(std::move(pass)) {};
 
     std::string m_privateKeyPath;
     std::string m_publicKeyPath;

@@ -1,7 +1,51 @@
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
+
 #include <memory>
 
 #include "src/impl.h"
 
+
+void SetStdinEcho(bool enable = true)
+{
+#ifdef WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+
+    if( !enable )
+        mode &= ~ENABLE_ECHO_INPUT;
+    else
+        mode |= ENABLE_ECHO_INPUT;
+
+    SetConsoleMode(hStdin, mode );
+
+#else
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    if( !enable )
+        tty.c_lflag &= ~ECHO;
+    else
+        tty.c_lflag |= ECHO;
+
+    (void) tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+#endif
+}
+
+std::string GetUserPassword()
+{
+    SetStdinEcho(false);
+    std::cout << "Enter the password phrase:\n";
+    std::string password;
+    std::cin >> password;
+
+    SetStdinEcho(true);
+    return password;
+}
 
 bool Parse(int argc, char *argv[], int& command, Arguments& args)
 {
@@ -10,15 +54,15 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
     
     if (strcmp(argv[1], "sign") == 0)
     {
-        if (argc != 4 && argc != 6)
+        if (argc != 3 && argc != 5)
             return false;
-        argc == 4 ? command = 1 : command = 2;
+        argc == 3 ? command = 1 : command = 2;
         args.m_filePath = argv[2];
-        args.m_password= argv[3];
+        args.m_password = GetUserPassword();
 
-        if (argc == 6)
+        if (argc == 5)
         {
-            args.m_privateKeyPath = argv[5];
+            args.m_privateKeyPath = argv[4];
         }
     }
     else if (strcmp(argv[1], "verify") == 0)
@@ -33,9 +77,9 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
     else if (strcmp(argv[1], "generate") == 0)
     {
         command = 4;
-        if (argc != 3)
+        if (argc != 2)
             return false;
-        args.m_password = argv[2];
+        args.m_password = GetUserPassword();
     }
     else if (strcmp(argv[1], "help") != 0)
     {
@@ -47,8 +91,23 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 
 std::string Execute(const int& command, Arguments& args)
 {
+    std::cout << "m_filePath = " << args.m_filePath << "\n";
+    std::cout << "m_password = " << args.m_password << "\n";
+    std::cout << "m_privateKeyPath = " << args.m_privateKeyPath << "\n";
+    std::cout << "m_publicKeyPath = " << args.m_publicKeyPath << "\n";
+    std::cout << "m_signatureFilePath = " << args.m_signatureFilePath << "\n";
     auto cmd = std::unique_ptr<ICommand>(CreateCommand(command, args));
+    std::cout << "m_filePath = " << args.m_filePath << "\n";
+    std::cout << "m_password = " << args.m_password << "\n";
+    std::cout << "m_privateKeyPath = " << args.m_privateKeyPath << "\n";
+    std::cout << "m_publicKeyPath = " << args.m_publicKeyPath << "\n";
+    std::cout << "m_signatureFilePath = " << args.m_signatureFilePath << "\n";
     auto result = cmd->Do();
+    std::cout << "m_filePath = " << args.m_filePath << "\n";
+    std::cout << "m_password = " << args.m_password << "\n";
+    std::cout << "m_privateKeyPath = " << args.m_privateKeyPath << "\n";
+    std::cout << "m_publicKeyPath = " << args.m_publicKeyPath << "\n";
+    std::cout << "m_signatureFilePath = " << args.m_signatureFilePath << "\n";
     return result;
 }
 
