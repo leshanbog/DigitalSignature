@@ -29,7 +29,6 @@ std::vector<unsigned char> Signing::ReadFile()
     std::ifstream fileToSign(m_filePath, std::ios::binary);
     const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
     fileToSign.close();
-    std::cout << "file size = " << fileCharacters.size() << '\n';
     return fileCharacters;
 }
 
@@ -65,7 +64,7 @@ SignNotGenerateCommand::SignNotGenerateCommand(Arguments& args) :
 std::string SignNotGenerateCommand::Do()
 { 
     PerformSigning();
-    return "sign without generating finished";
+    return "Sign without generating finished";
 }
 
 Key SignNotGenerateCommand::ObtainPrivateKey()
@@ -88,7 +87,7 @@ SignAndGenerateCommand::SignAndGenerateCommand(Arguments& args) :
 std::string SignAndGenerateCommand::Do()
 {
     PerformSigning();
-    return "sign and generating finished";
+    return "Sign and generating finished";
 }
 
 Key SignAndGenerateCommand::ObtainPrivateKey()

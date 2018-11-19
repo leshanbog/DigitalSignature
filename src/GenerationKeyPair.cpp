@@ -2,6 +2,7 @@
 #include <fstream>
 #include <functional>
 #include <map>
+#include <time.h>
 
 #include "GenerationKeyPair.h"
 
@@ -9,7 +10,6 @@
 
 std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 {
-    std::cout << "pass =  " << m_password << "\n";
     std::string data = std::to_string(pk.exp) + " " + std::to_string(pk.n);
     std::string encodedPass = GammaChiper(m_password, PermutationChiperEncode(m_password, data));
     return encodedPass;
@@ -19,6 +19,8 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 {
     std::string decodedKey =  PermutationChiperDecode(m_password, GammaChiper(m_password, data));
     int spaceIndex = decodedKey.find(" ");
+    if (spaceIndex == std::string::npos)
+        return {0,0};
     return { (uint32_t)stoul(decodedKey.substr(0, spaceIndex)), (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, data.size() - spaceIndex - 1))};
 }
 
@@ -92,6 +94,7 @@ std::string PasswordNeeded::PermutationChiperEncode(const std::string key, const
 
 primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
 {
+    srand(time(0));
     primeNumber p = rand() % 32767 + 32769;
     while (!IsPrime(p))
     {
@@ -129,6 +132,7 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
 uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 {
     //return 65537;
+    srand(time(0));
     uint32_t publicExponent = (rand() % (phi - 999) ) + 999;
     while (Gcd(publicExponent, phi) != 1)
     {
@@ -138,15 +142,15 @@ uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 }
 
 
-uint32_t GenerationKeyPair::FindPrivateExponent(uint64_t publicExponent, uint64_t phi)
+uint32_t GenerationKeyPair::FindPrivateExponent(int64_t publicExponent, int64_t phi)
 {
-	// TODO: use exgcd for finding inverse
-    uint64_t d = 2;
-    while (((d * publicExponent) % phi) != 1)
+    int64_t x,y;
+    if (exgcd(publicExponent, phi, x, y) != 1)
     {
-        ++d;
+        throw std::runtime_error("Phi and public exponent are not coprime! Impossible situation");
     }
-    return d;
+    uint32_t pe = (x%phi + phi) % phi;
+    return pe;
 }
 
 Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()

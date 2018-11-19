@@ -33,14 +33,11 @@ GenerateCommand::GenerateCommand(Arguments& args) :
 std::string GenerateCommand::Do()
 {
     PerformGenerationAndGetPrivateKey();
-    return "generation done";
+    return "Generation done";
 }
-
-
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
 
 std::string HelpCommand::Do()
 {
-    return "TODO: write help";
+    return "Commands:\n\tsign <path to file> --pr <path to private key>\n\tverify <path to file> <path to signature> <path to public key>\n\tgenerate\n\thelp\n\nThis console application is\nmake by Alexey Bukhtiyarov\nNRU MPEI, A-13-15\n";
 }

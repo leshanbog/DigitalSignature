@@ -1,6 +1,6 @@
 Tentative commands:
 
-- **sign** \<*path to file*> \<*password*> **--pr** \<*path to private key*>
+- **sign** \<*path to file*> **--pr** \<*path to private key*>
 - **verify** \<*path to file*> \<*path to signature*> \<*path to public key*>
-- **generate** \<*password*>
+- **generate**
 - **help**

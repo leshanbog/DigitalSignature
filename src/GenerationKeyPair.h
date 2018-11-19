@@ -4,8 +4,6 @@
 #include "Base.h"
 
 #include <string>
-// TODO: delete
-#include <iostream>
 
 typedef uint16_t primeNumber;
 typedef uint32_t module;
@@ -13,7 +11,7 @@ typedef uint32_t module;
 class PasswordNeeded
 {
 protected:
-    PasswordNeeded(std::string&& pass) : m_password(pass) {};
+    PasswordNeeded(std::string&& pass) : m_password(std::move(pass)) {};
     std::string EncodePrivateKey(const Key& pk);
     Key DecodePrivateKey(const std::string& pk);
 
@@ -43,9 +41,21 @@ protected:
     primeNumber GenerateRandomPrimeNumber();
     bool IsPrime(const primeNumber& p);
     uint32_t ChoosePublicExponent(uint32_t phi);
-    uint32_t FindPrivateExponent(uint64_t publicExponent, uint64_t phi);
+    uint32_t FindPrivateExponent(int64_t publicExponent, int64_t phi);
     Key PerformGenerationAndGetPrivateKey();
 
+   template <typename T>
+    T exgcd (T a, T b, T& x, T& y) {
+	if (b == 0) {
+		x = 1; y = 9;
+		return a;
+	}
+        T g = exgcd (b, a%b, x, y);
+        T tx = x;
+        x = y;
+        y = tx - (a/b) * x;
+        return g;
+    } 
 
     template<typename T> 
     T Gcd(T a, T b)
@@ -59,6 +69,4 @@ protected:
         }
         return a;
     }
-
-
 };

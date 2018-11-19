@@ -12,7 +12,6 @@ VerifyCommand::VerifyCommand(Arguments& args) :
 
 std::string VerifyCommand::Do()
 {
-    std::cout << "Verify do\n";
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
 
@@ -24,14 +23,13 @@ std::string VerifyCommand::Do()
 
     if (fileHashPreimage == fileHash)
     {
-        std::cout << "Signature is valid!\n";
+        return "Signature is valid!\nVerification done";
     }
     else
     {
-        std::cout << "Signature is not valid!\n";
+        return "Signature is not valid!\nVerification done";
     }
 
-    return "verification done";
 }
 
 Key VerifyCommand::GetPublicKey()

@@ -44,6 +44,7 @@ std::string GetUserPassword()
     std::cin >> password;
 
     SetStdinEcho(true);
+    std::cout << "\nGood choice!\n";
     return password;
 }
 
@@ -91,23 +92,8 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
 
 std::string Execute(const int& command, Arguments& args)
 {
-    std::cout << "m_filePath = " << args.m_filePath << "\n";
-    std::cout << "m_password = " << args.m_password << "\n";
-    std::cout << "m_privateKeyPath = " << args.m_privateKeyPath << "\n";
-    std::cout << "m_publicKeyPath = " << args.m_publicKeyPath << "\n";
-    std::cout << "m_signatureFilePath = " << args.m_signatureFilePath << "\n";
     auto cmd = std::unique_ptr<ICommand>(CreateCommand(command, args));
-    std::cout << "m_filePath = " << args.m_filePath << "\n";
-    std::cout << "m_password = " << args.m_password << "\n";
-    std::cout << "m_privateKeyPath = " << args.m_privateKeyPath << "\n";
-    std::cout << "m_publicKeyPath = " << args.m_publicKeyPath << "\n";
-    std::cout << "m_signatureFilePath = " << args.m_signatureFilePath << "\n";
     auto result = cmd->Do();
-    std::cout << "m_filePath = " << args.m_filePath << "\n";
-    std::cout << "m_password = " << args.m_password << "\n";
-    std::cout << "m_privateKeyPath = " << args.m_privateKeyPath << "\n";
-    std::cout << "m_publicKeyPath = " << args.m_publicKeyPath << "\n";
-    std::cout << "m_signatureFilePath = " << args.m_signatureFilePath << "\n";
     return result;
 }
 
@@ -136,4 +122,4 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// TODO: add concurrency, remove coping in constructors
+// TODO: add concurrency, check for byte_storage size > 1
