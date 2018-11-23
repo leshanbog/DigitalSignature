@@ -1,9 +1,9 @@
 #pragma once
 
 #include <fstream>
+#include <vector>
 
-
-typedef uint32_t byte;
+typedef uint32_t Byte;
 
 const size_t BYTE_STORAGE_SIZE = 1;
 
@@ -20,7 +20,7 @@ struct ByteStorage
     friend std::ofstream& operator<<(std::ofstream& os, const ByteStorage& bs);
     friend std::ifstream& operator>>(std::ifstream& is, ByteStorage& bs);
 
-    byte m_data[BYTE_STORAGE_SIZE];
+	Byte m_data[BYTE_STORAGE_SIZE];
 };
 
 

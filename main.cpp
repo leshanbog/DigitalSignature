@@ -27,7 +27,6 @@ void SetStdinEcho(bool enable = true)
         mode |= ENABLE_ECHO_INPUT;
 
     SetConsoleMode(hStdin, mode );
-
 #else
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);

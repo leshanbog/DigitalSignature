@@ -39,5 +39,5 @@ std::string GenerateCommand::Do()
 
 std::string HelpCommand::Do()
 {
-    return "Commands:\n\tsign <path to file> --pr <path to private key>\n\tverify <path to file> <path to signature> <path to public key>\n\tgenerate\n\thelp\n\nThis console application is\nmake by Alexey Bukhtiyarov\nNRU MPEI, A-13-15\n";
+    return "Commands:\n\tsign <path to file> --pr <path to private key>\n\tverify <path to file> <path to signature> <path to public key>\n\tgenerate\n\thelp\n\nThis console application is\nmade by Alexey Bukhtiyarov\nNRU MPEI, A-13-15\n";
 }

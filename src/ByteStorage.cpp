@@ -9,18 +9,18 @@
 ByteStorage::ByteStorage()
 {
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        m_data[i] = static_cast<byte>(0);
+        m_data[i] = static_cast<Byte>(0);
 }
 
 
 ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
 {
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        m_data[i] = static_cast<byte>(stream.size()+i);
+        m_data[i] = static_cast<Byte>(stream.size()+i);
 
     for (size_t i = 0; i < stream.size(); ++i)
     {
-        auto h = std::hash<byte>{}(stream[i]);
+        auto h = std::hash<Byte>{}(stream[i]);
         m_data[i % BYTE_STORAGE_SIZE] ^= stream[i] + 0x9e3779b9 + (m_data[i % BYTE_STORAGE_SIZE] << 6) + (m_data[i % BYTE_STORAGE_SIZE] >> 2);
     }
     // hash must be smaller then module (n = p*q)
@@ -40,7 +40,7 @@ ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const
         {
             power = (power * factor) % n;
         }
-        ans.m_data[i] = static_cast<byte>(power);
+        ans.m_data[i] = static_cast<Byte>(power);
     }
     return ans;
 }
