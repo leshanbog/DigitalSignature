@@ -3,8 +3,6 @@
 #include "Signing.h"
 #include "Verification.h"
 
-
-#include <iostream>
 #include <string>
 
 

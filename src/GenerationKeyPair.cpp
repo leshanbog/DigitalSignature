@@ -1,11 +1,10 @@
+#include "GenerationKeyPair.h"
+
 #include <random>
 #include <fstream>
 #include <functional>
 #include <map>
 #include <time.h>
-
-#include "GenerationKeyPair.h"
-
 
 
 std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
@@ -19,76 +18,74 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 {
     std::string decodedKey =  PermutationChiperDecode(m_password, GammaChiper(m_password, data));
     int spaceIndex = decodedKey.find(" ");
-    if (spaceIndex == std::string::npos)
+    if (spaceIndex == std::string::npos || spaceIndex == 0 || spaceIndex == decodedKey.size()-1)
         return {0,0};
     return { (uint32_t)stoul(decodedKey.substr(0, spaceIndex)), (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, data.size() - spaceIndex - 1))};
 }
 
-std::string PasswordNeeded::GammaChiper(const std::string key, const std::string& pass)
+std::string PasswordNeeded::GammaChiper(const std::string key, const std::string& data)
 {   
     srand(std::hash<std::string>{}(key));
-	std::string encodedPass = pass;
-	for (int i = 0; i < encodedPass.size(); ++i)
-	{
-		unsigned char c = rand() % 256;
-		encodedPass[i] ^= c;
-	}
+    std::string encodedData = data;
+    for (int i = 0; i < encodedData.size(); ++i)
+    {
+        unsigned char c = rand() % 256;
+        encodedData[i] ^= c;
+    }
 
-	return encodedPass;
+    return encodedData;
 }
 
 std::vector<int> PasswordNeeded::GeneratePerm(const std::string& word)
 {
-	std::vector<int> v(word.size());
-	std::multimap<char, int> m;
-	for (int i = 0; i < word.size(); ++i)
-		m.insert(std::make_pair(word[i], i));
+    std::vector<int> v(word.size());
+    std::multimap<char, int> m;
+    for (int i = 0; i < word.size(); ++i)
+        m.insert(std::make_pair(word[i], i));
 
-	int k = 0;
-	for (auto& elem : m)
-		v[elem.second] = k++;
+    int k = 0;
+    for (auto& elem : m)
+        v[elem.second] = k++;
 
-	return v;
+    return v;
 }
 
-std::string PasswordNeeded::PermutationChiperDecode(const std::string key, const std::string& pass)
+std::string PasswordNeeded::PermutationChiperDecode(const std::string key, const std::string& data)
 {
- 	std::vector<int> k = GeneratePerm(key);
+     std::vector<int> perm = GeneratePerm(key);
 
-	std::string decodedPass = pass;
+    std::string decodedData = data;
 
-	for (int i = 0; i < pass.size() / k.size(); ++i)
-	{
-		for (int j = 0; j < k.size(); ++j)
-		{
-			decodedPass[i*k.size() + j] = pass[i*k.size()+k[j]];
-		}
-	}
+    for (int i = 0; i < data.size() / perm.size(); ++i)
+    {
+        for (int j = 0; j < perm.size(); ++j)
+        {
+            decodedData[i * perm.size() + j] = data[i * perm.size() + perm[j]];
+        }
+    }
 
-	while (decodedPass[decodedPass.size() - 1] == ' ')
-		decodedPass.erase(decodedPass.begin() + decodedPass.size() - 1);
-	
-	return decodedPass;
+    decodedData.resize(decodedData.find_last_not_of(' ') + 1);
+
+    return decodedData;
 }
 
-std::string PasswordNeeded::PermutationChiperEncode(const std::string key, const std::string& pass)
+std::string PasswordNeeded::PermutationChiperEncode(const std::string key, const std::string& data)
 {
-	std::vector<int> k = GeneratePerm(key);
+    std::vector<int> perm = GeneratePerm(key);
 
-	std::string password = pass;
-	while (password.size() % k.size() != 0)
-		password += ' ';
+    std::string dataToEncode = data;
+    dataToEncode.insert(dataToEncode.size(),  (perm.size() - (dataToEncode.size() % perm.size())) % perm.size(), ' ');
 
-	std::string encodedPass = password;
-	for (int i = 0; i < password.size() / k.size(); ++i) 
-	{
-		for (int j = 0; j < k.size(); ++j)
-		{
-			encodedPass[i*k.size() + k[j]] = password[i*k.size() + j];
-		}
-	}
+    std::string encodedData = dataToEncode;
+    for (int i = 0; i < dataToEncode.size() / perm.size(); ++i) 
+    {
+        for (int j = 0; j < perm.size(); ++j)
+        {
+            encodedData[i * perm.size() + perm[j]] = dataToEncode[i * perm.size() + j];
+        }
+    }
 
-	return encodedPass;
+    return encodedData;
 }
 
 
@@ -162,7 +159,6 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
     {
         q = GenerateRandomPrimeNumber();
     }
-
     module n = p * q;
     uint32_t phi = (p-1)*(q-1);
     uint32_t publicExponent = ChoosePublicExponent(phi);

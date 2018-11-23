@@ -54,9 +54,9 @@ std::vector<unsigned char> VerifyCommand::ReadFile()
 {
     try
     {
-        std::ifstream fileToSign(m_filePath, std::ios::binary);
-        const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
-        fileToSign.close();
+        std::ifstream fileToVerify(m_filePath, std::ios::binary);
+        const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToVerify), (std::istreambuf_iterator<char>()));
+        fileToVerify.close();
         return fileCharacters;
     }
     catch (std::bad_alloc& err)

@@ -3,10 +3,6 @@
 
 #include <fstream>
 #include <vector>
-// TODO: delete iostream
-#include <iostream>
-
-
 
 
 Signing::Signing(Arguments& args) :
@@ -26,10 +22,17 @@ std::string Signing::MakeSignatureFileName()
 
 std::vector<unsigned char> Signing::ReadFile()
 {
-    std::ifstream fileToSign(m_filePath, std::ios::binary);
-    const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
-    fileToSign.close();
-    return fileCharacters;
+    try
+    {
+        std::ifstream fileToSign(m_filePath, std::ios::binary);
+        const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+        fileToSign.close();
+        return fileCharacters;
+    }
+    catch (std::bad_alloc& err)
+    {
+        throw std::runtime_error("File is too big!\n");
+    }
 }
 
 void Signing::SaveSignature(const Signature& signature)

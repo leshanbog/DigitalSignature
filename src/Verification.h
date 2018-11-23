@@ -2,7 +2,7 @@
 
 #include "Base.h"
 
-// TODO: code duplication (ReadFile, GetFileHash implemented in Signing); 
+
 class VerifyCommand : public ICommand
 {
 public:

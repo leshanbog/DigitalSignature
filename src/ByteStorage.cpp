@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 
+
 ByteStorage::ByteStorage()
 {
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
@@ -24,7 +25,7 @@ ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
     }
     // hash must be smaller then module (n = p*q)
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        m_data[i] >>= 1;
+        m_data[i] >>= 2;
 }
 
 ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const

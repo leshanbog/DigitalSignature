@@ -1,3 +1,6 @@
+#include "src/impl.h"
+
+
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -6,8 +9,9 @@
 #endif
 
 #include <memory>
+#include <iostream>
 
-#include "src/impl.h"
+
 
 
 void SetStdinEcho(bool enable = true)
@@ -122,4 +126,4 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-// TODO: add concurrency, check for byte_storage size > 1
+// TODO: add concurrency

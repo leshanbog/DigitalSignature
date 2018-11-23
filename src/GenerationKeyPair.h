@@ -16,10 +16,10 @@ protected:
     Key DecodePrivateKey(const std::string& pk);
 
 private:
-    std::string GammaChiper(const std::string key, const std::string& pass);
+    std::string GammaChiper(const std::string key, const std::string& data);
     std::vector<int> GeneratePerm(const std::string& word);
-    std::string PermutationChiperDecode(const std::string key, const std::string& pass);
-    std::string PermutationChiperEncode(const std::string key, const std::string& pass);
+    std::string PermutationChiperDecode(const std::string key, const std::string& data);
+    std::string PermutationChiperEncode(const std::string key, const std::string& data);
 
 protected:
     std::string m_password;
