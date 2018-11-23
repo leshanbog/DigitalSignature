@@ -10,7 +10,7 @@
 
 #include <memory>
 #include <iostream>
-
+#include <cstring>
 
 
 
