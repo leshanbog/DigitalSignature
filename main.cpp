@@ -1,7 +1,7 @@
 #include "src/impl.h"
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <termios.h>
@@ -16,7 +16,7 @@
 
 void SetStdinEcho(bool enable = true)
 {
-#ifdef WIN32
+#ifdef _WIN32
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
     DWORD mode;
     GetConsoleMode(hStdin, &mode);
