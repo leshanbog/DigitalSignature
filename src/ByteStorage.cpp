@@ -5,8 +5,6 @@
 #include <vector>
 #include <string>
 
-//TODO:remove
-#include <iostream>
 
 ByteStorage::ByteStorage()
 {
@@ -24,13 +22,11 @@ ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
     for (size_t i = 0; i < stream.size(); ++i)
     {
         auto h = hasher(stream[i]);
-        std::cout << ((h >> 2) ^ stream[i]) << ' ';
 		m_data[i % BYTE_STORAGE_SIZE] ^= ((h >> 2) ^ stream[i]);
     }
     // hash must be smaller then module (n = p*q)
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
         m_data[i] >>= 2;
-    std::cout << "\n";
 }
 
 ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const

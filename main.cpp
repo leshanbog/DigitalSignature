@@ -135,9 +135,9 @@ int main(int argc, char *argv[])
 				std::cout << "Wrong commang!\nType \"ds help\" to get help";
 			}
 		}
-		catch (...)
+		catch (std::exception& e)
 		{
-			std::cout << "Error";
+			std::cout << "Error:" << e.what() << '\n';
 		}
 	}
 	else // Dialog mode (temporary)
@@ -170,6 +170,7 @@ int main(int argc, char *argv[])
 				argc++;
 				while (i < cmd.size() && cmd[i] == ' ' || cmd[i] == '\t')
 					++i;
+				cur = "";
 			}
 
 			try
@@ -187,9 +188,9 @@ int main(int argc, char *argv[])
 					std::cout << "Wrong commang!\nType \"ds help\" to get help\n";
 				}
 			}
-			catch (...)
+			catch (std::exception& e)
 			{
-				std::cout << "Error\n";
+				std::cout << "Error:" << e.what() << '\n';
 			}
 			for (int i = 1; i < argc; ++i)
 				delete argv[i];

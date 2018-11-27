@@ -4,6 +4,7 @@
 #include "Base.h"
 
 #include <string>
+#include <iostream>
 
 typedef uint16_t primeNumber;
 typedef uint32_t module;
@@ -33,7 +34,21 @@ protected:
     GenerationKeyPair(std::string& pass) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
-        PasswordNeeded(std::move(pass)) {};
+        PasswordNeeded(std::move(pass)) {
+	// TODO: remove
+		std::cout << "Do you want to change file names in which keys will be generated? ( y - yes, else no)\n";
+		char c;
+		std::cin.get(c);
+		std::cin.get(c);
+		if (c == 'y')
+		{
+			std::cout << "Write the name of file for private key:\n";
+			std::cin >> m_privateKeyPath;
+			std::cout << "Write the name of file for public key:\n";
+			std::cin >> m_publicKeyPath;
+		}
+		std::cout << "generating keys...\n";
+	};
 
     std::string m_privateKeyPath;
     std::string m_publicKeyPath;

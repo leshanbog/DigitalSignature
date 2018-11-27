@@ -27,6 +27,8 @@ std::vector<unsigned char> Signing::ReadFile()
         std::ifstream fileToSign(m_filePath, std::ios::binary);
         const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
         fileToSign.close();
+		if (fileCharacters.empty())
+			throw std::runtime_error("File is empty!\n");
         return fileCharacters;
     }
     catch (std::bad_alloc& err)
