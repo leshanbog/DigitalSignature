@@ -16,6 +16,9 @@ std::string VerifyCommand::Do()
     const Hash fileHash(fileCharacters);
 
     const auto signature = GetSignature();
+    const Signature zeroSignature;
+    if (signature == zeroSignature)
+        return "Check your signature file!\n";
     const auto publicKey = GetPublicKey();
 
     // calculate preimage

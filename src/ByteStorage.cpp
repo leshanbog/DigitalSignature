@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+//TODO:remove
+#include <iostream>
 
 ByteStorage::ByteStorage()
 {
@@ -18,13 +20,17 @@ ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
         m_data[i] = static_cast<Byte>(stream.size()+i);
 
+    std::hash<Byte> hasher;
     for (size_t i = 0; i < stream.size(); ++i)
     {
-		m_data[i % BYTE_STORAGE_SIZE] ^= stream[i] + 0x9e3779b9 + (m_data[i % BYTE_STORAGE_SIZE] << 6) + (m_data[i % BYTE_STORAGE_SIZE] >> 2);
+        auto h = hasher(stream[i]);
+        std::cout << ((h >> 2) ^ stream[i]) << ' ';
+		m_data[i % BYTE_STORAGE_SIZE] ^= ((h >> 2) ^ stream[i]);
     }
     // hash must be smaller then module (n = p*q)
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
         m_data[i] >>= 2;
+    std::cout << "\n";
 }
 
 ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const
@@ -56,7 +62,7 @@ bool ByteStorage::operator==(const ByteStorage& other) const
 std::ofstream& operator<<(std::ofstream& os, const ByteStorage& bs)
 {
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-        os << bs.m_data[i] << ' '; 
+        os << bs.m_data[i] << ' ';
 
     return os;
 }
