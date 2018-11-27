@@ -5,7 +5,7 @@
 
 typedef uint32_t Byte;
 
-const size_t BYTE_STORAGE_SIZE = 1;
+const size_t BYTE_STORAGE_SIZE = 3;
 
 
 struct ByteStorage

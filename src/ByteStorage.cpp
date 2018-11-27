@@ -20,8 +20,7 @@ ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
 
     for (size_t i = 0; i < stream.size(); ++i)
     {
-        auto h = std::hash<Byte>{}(stream[i]);
-        m_data[i % BYTE_STORAGE_SIZE] ^= stream[i] + 0x9e3779b9 + (m_data[i % BYTE_STORAGE_SIZE] << 6) + (m_data[i % BYTE_STORAGE_SIZE] >> 2);
+		m_data[i % BYTE_STORAGE_SIZE] ^= stream[i] + 0x9e3779b9 + (m_data[i % BYTE_STORAGE_SIZE] << 6) + (m_data[i % BYTE_STORAGE_SIZE] >> 2);
     }
     // hash must be smaller then module (n = p*q)
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)

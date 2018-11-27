@@ -42,13 +42,29 @@ void SetStdinEcho(bool enable = true)
 std::string GetUserPassword()
 {
     SetStdinEcho(false);
-    std::cout << "Enter the password phrase:\n";
-    std::string password;
-    std::cin >> password;
+
+    std::string password1, password2;
+
+
+	while (true)
+	{
+		std::cout << "Enter the password phrase:\n";
+		std::cin >> password1;
+		std::cout << "Confirm the password phrase:\n";
+		std::cin >> password2;
+		if (password1 != password2)
+		{
+			std::cout << "Password phrases does not match! Try again\n";
+		}
+		else
+		{
+			break;
+		}
+	}
 
     SetStdinEcho(true);
     std::cout << "\nGood choice!\n";
-    return password;
+    return password1;
 }
 
 bool Parse(int argc, char *argv[], int& command, Arguments& args)
@@ -102,25 +118,87 @@ std::string Execute(const int& command, Arguments& args)
 
 int main(int argc, char *argv[])
 {
-    try
-    {
-        int commandName = 0;
-        Arguments args;
+	if (argc > 1)
+	{
+		try
+		{
+			int commandName = 0;
+			Arguments args;
 
-        if (Parse(argc, argv, commandName, args))
-        {
-            const auto result = Execute(commandName, args);
-            std::cout << result;
-        }
-        else
-        {
-            std::cout << "Wrong commang!\nType \"ds help\" to get help";
-        }
-    }
-    catch (...)
-    {
-        std::cout << "Error";
-    }
+			if (Parse(argc, argv, commandName, args))
+			{
+				const auto result = Execute(commandName, args);
+				std::cout << result;
+			}
+			else
+			{
+				std::cout << "Wrong commang!\nType \"ds help\" to get help";
+			}
+		}
+		catch (...)
+		{
+			std::cout << "Error";
+		}
+	}
+	else // Dialog mode (temporary)
+	{
+		std::string cmd;
+		std::cout << "Dialog mode started. Enter the command:\n";
+		std::getline(std::cin, cmd);
+
+		while (cmd != "exit")
+		{
+			if (cmd.empty())
+			{
+				std::getline(std::cin, cmd);
+				continue;
+			}
+			int argc = 1;
+			char **argv = new char*[10];
+
+			int i = 0;
+			std::string cur = "";
+			while (i < cmd.size())
+			{
+				while (i < cmd.size() && cmd[i] != ' ' && cmd[i] != '\t')
+				{
+					cur += cmd[i++];
+				}
+				argv[argc] = new char[cur.size() + 1];
+				std::copy(cur.c_str(), cur.c_str() + cur.size(), argv[argc]);
+				argv[argc][cur.size()] = 0;
+				argc++;
+				while (i < cmd.size() && cmd[i] == ' ' || cmd[i] == '\t')
+					++i;
+			}
+
+			try
+			{
+				int commandName = 0;
+				Arguments args;
+
+				if (Parse(argc, argv, commandName, args))
+				{
+					const auto result = Execute(commandName, args);
+					std::cout << result;
+				}
+				else
+				{
+					std::cout << "Wrong commang!\nType \"ds help\" to get help\n";
+				}
+			}
+			catch (...)
+			{
+				std::cout << "Error\n";
+			}
+			for (int i = 1; i < argc; ++i)
+				delete argv[i];
+			delete[]argv;
+			std::cout <<  "\nEnter next command or 'exit' to exit\n";
+			std::getline(std::cin, cmd);
+		}
+
+	}
     std::cout << '\n';
     return 0;
 }

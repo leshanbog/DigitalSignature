@@ -16,7 +16,7 @@ struct Arguments
 
 struct Key
 {
-    Key(uint32_t _exp = 0, uint32_t _n = 0) :
+    Key(uint32_t _exp = 1, uint32_t _n = 128) :
         exp(_exp), n(_n) {}
     uint32_t exp;
     uint32_t n;

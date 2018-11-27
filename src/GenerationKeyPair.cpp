@@ -16,11 +16,22 @@ std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 
 Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 {
-    std::string decodedKey =  PermutationChiperDecode(m_password, GammaChiper(m_password, data));
-    int spaceIndex = decodedKey.find(" ");
-    if (spaceIndex == std::string::npos || spaceIndex == 0 || spaceIndex == decodedKey.size()-1)
-        return {0,0};
-    return { (uint32_t)stoul(decodedKey.substr(0, spaceIndex)), (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, data.size() - spaceIndex - 1))};
+	std::string decodedKey = PermutationChiperDecode(m_password, GammaChiper(m_password, data));
+	int spaceIndex = decodedKey.find(" ");
+	if (spaceIndex == std::string::npos || spaceIndex == 0 || spaceIndex == decodedKey.size() - 1)
+		return { 0,0 };
+	Key k;
+	try
+	{
+		k.exp = (uint32_t)stoul(decodedKey.substr(0, spaceIndex));
+		k.n = (uint32_t)stoul(decodedKey.substr(spaceIndex + 1, data.size() - spaceIndex - 1));
+	}
+	catch (...)
+	{
+		k.exp = 1;
+		k.n = 128;
+	}
+	return k;
 }
 
 std::string PasswordNeeded::GammaChiper(const std::string key, const std::string& data)
