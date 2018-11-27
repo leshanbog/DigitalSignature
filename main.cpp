@@ -39,27 +39,34 @@ void SetStdinEcho(bool enable = true)
 #endif
 }
 
-std::string GetUserPassword()
+std::string GetUserPassword(bool f)
 {
     SetStdinEcho(false);
 
     std::string password1, password2;
 
-
-	while (true)
+	if (f)
+	{
+		while (true)
+		{
+			std::cout << "Enter the password phrase:\n";
+			std::cin >> password1;
+			std::cout << "Confirm the password phrase:\n";
+			std::cin >> password2;
+			if (password1 != password2)
+			{
+				std::cout << "Password phrases does not match! Try again\n";
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
 	{
 		std::cout << "Enter the password phrase:\n";
 		std::cin >> password1;
-		std::cout << "Confirm the password phrase:\n";
-		std::cin >> password2;
-		if (password1 != password2)
-		{
-			std::cout << "Password phrases does not match! Try again\n";
-		}
-		else
-		{
-			break;
-		}
 	}
 
     SetStdinEcho(true);
@@ -78,7 +85,10 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
             return false;
         argc == 3 ? command = 1 : command = 2;
         args.m_filePath = argv[2];
-        args.m_password = GetUserPassword();
+		if (argc == 3)
+			args.m_password = GetUserPassword(true);
+		else
+			args.m_password = GetUserPassword(false);
 
         if (argc == 5)
         {
@@ -99,7 +109,7 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
         command = 4;
         if (argc != 2)
             return false;
-        args.m_password = GetUserPassword();
+        args.m_password = GetUserPassword(true);
     }
     else if (strcmp(argv[1], "help") != 0)
     {
