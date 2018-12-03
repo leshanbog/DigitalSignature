@@ -47,7 +47,7 @@ protected:
 			std::cout << "Write the name of file for public key:\n";
 			std::cin >> m_publicKeyPath;
 		}
-		std::cout << "generating keys...\n";
+		std::cout << "generating keys..." << std::endl;
 	};
 
     std::string m_privateKeyPath;

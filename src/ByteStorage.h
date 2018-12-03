@@ -3,6 +3,9 @@
 #include <fstream>
 #include <vector>
 
+// TODO: delete
+#include <iostream>
+
 typedef uint32_t Byte;
 
 const size_t BYTE_STORAGE_SIZE = 3;
@@ -14,6 +17,7 @@ struct ByteStorage
     ByteStorage();
 
     ByteStorage PowMod(uint32_t exp, uint32_t n) const;
+    void SignlePowMod(Byte a, uint32_t exp, uint32_t n, Byte* num) const;
 
     bool operator==(const ByteStorage& other) const;
 

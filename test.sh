@@ -1,59 +1,87 @@
+set -x
 mkdir temp
 cp build/ds temp && cd temp
-cp ~/Documents/The_C__Programming_Language__Stroustrup_.pdf .
+doc=$1
+cp -v ${doc} .
+filename2="${doc##*/}"
+filename="${filename2%.*}"
+printf $filename
 
 # test 1
 printf "\n\n"
-echo "pBn_2;1|v" | ./ds generate
+echo "pBn_2;1|v pBn_2;1|v" | ./ds generate
 
 # wrong password
-echo "pBn_2;1|"  | ./ds sign The_C__Programming_Language__Stroustrup_.pdf --pr privatekey
+echo "pBn_2;1| pBn_2;1|"  | ./ds sign ${filename2} --pr privatekey
 
-./ds verify The_C__Programming_Language__Stroustrup_.pdf The_C__Programming_Language__Stroustrup__signature publickey
+./ds verify ${filename2} ${filename}_signature publickey
 
-printf "\nTEST: Signarure must be NOT VALID\n\n\n"
+printf "\nTEST: Signarure must be NOT VALID\n\n\n\n"
 
-
+sleep 1
 # test2
 
 # right password
-echo "pBn_2;1|v" | ./ds sign The_C__Programming_Language__Stroustrup_.pdf --pr privatekey
+echo "pBn_2;1|v pBn_2;1|v" | ./ds sign ${filename2} --pr privatekey
 
 
-./ds verify The_C__Programming_Language__Stroustrup_.pdf The_C__Programming_Language__Stroustrup__signature publickey
+./ds verify ${filename2} ${filename}_signature publickey
 
-printf "\nTEST: Signarure must be VALID\n\n\n"
-
+printf "\nTEST: Signarure must be VALID\n\n\n\n"
+sleep 1
 
 # test3
 
-rm *key The_C__Programming_Language__Stroustrup__signature
+rm *key ${filename}_signature
 
-echo "u7!WWb0O" | ./ds sign The_C__Programming_Language__Stroustrup_.pdf 
+echo "u7!WWb0O u7!WWb0O" | ./ds sign ${filename2} 
 
-./ds verify The_C__Programming_Language__Stroustrup_.pdf The_C__Programming_Language__Stroustrup__signature publickey
-printf "\nTEST: Signarure must be VALID\n\n\n"
-
+./ds verify ${filename2} ${filename}_signature publickey
+printf "\nTEST: Signarure must be VALID\n\n\n\n"
+sleep 1
 
 # test4
 
-rm The_C__Programming_Language__Stroustrup__signature
+rm ${filename}_signature
 
 # wrong password
-echo "u7!Wb0O" | ./ds sign The_C__Programming_Language__Stroustrup_.pdf --pr privatekey
+echo "u7!Wb0O u7!Wb0O" | ./ds sign ${filename2} --pr privatekey
 
-./ds verify The_C__Programming_Language__Stroustrup_.pdf The_C__Programming_Language__Stroustrup__signature publickey
-printf "\nTEST: Signarure must be NOT VALID\n\n\n"
-
+./ds verify ${filename2} ${filename}_signature publickey
+printf "\nTEST: Signarure must be NOT VALID\n\n\n\n"
+sleep 1
 
 # test5 
 
-rm The_C__Programming_Language__Stroustrup__signature
+rm ${filename}_signature
 
-echo "u7!WWb0O" | ./ds sign The_C__Programming_Language__Stroustrup_.pdf --pr privatekey
+echo "u7!WWb0O u7!WWb0O" | ./ds sign ${filename2} --pr privatekey
 
-./ds verify The_C__Programming_Language__Stroustrup_.pdf The_C__Programming_Language__Stroustrup__signature publickey
-printf "\nTEST: Signarure must be VALID\n\n\n"
+./ds verify ${filename2} ${filename}_signature publickey
+printf "\nTEST: Signarure must be VALID\n\n\n\n"
+sleep 1
+
+# test6
+
+echo "11" > my_test
+
+echo "pas.5 pas.5" | ./ds sign my_test
+./ds verify my_test my_test_signature publickey
+printf "\nTEST: Signature must be VALID\n\n\n'n"
+sleep 1
+
+
+rm my_test
+./ds verify my_test my_test_signature publickey
+printf "\nTEST: Signature must be NOT VALID\n\n\n\n"
+sleep 1
+
+
+echo "10" > my_test
+./ds verify my_test my_test_signature publickey
+printf "\nTEST: Signature must be NOT VALID\n\n\n\n"
+sleep 1
 
 cd ..
 rm -r temp
+set +x

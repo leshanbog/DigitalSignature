@@ -9,6 +9,7 @@
 
 std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 {
+    std::cout << "Password while encoding " << m_password << "\n";
     std::string data = std::to_string(pk.exp) + " " + std::to_string(pk.n);
     std::string encodedPass = GammaChiper(m_password, PermutationChiperEncode(m_password, data));
     return encodedPass;
@@ -16,6 +17,7 @@ std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 
 Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 {
+    std::cout << "Password while decoding " << m_password << "\n";
 	std::string decodedKey = PermutationChiperDecode(m_password, GammaChiper(m_password, data));
 	int spaceIndex = decodedKey.find(" ");
 	if (spaceIndex == std::string::npos || spaceIndex == 0 || spaceIndex == decodedKey.size() - 1)
@@ -31,6 +33,7 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 		k.exp = 1;
 		k.n = 128;
 	}
+    std::cout << "Decoded private key " << k.exp << " " << k.n << "\n";
 	return k;
 }
 
@@ -102,12 +105,12 @@ std::string PasswordNeeded::PermutationChiperEncode(const std::string key, const
 
 primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
 {
-    srand(time(0));
     primeNumber p = rand() % 32767 + 32769;
     while (!IsPrime(p))
     {
         p = rand() % 32767 + 32769;
     }
+    std::cout << "Prime generated: " << p << std::endl;
     return p;
 }
 
@@ -146,6 +149,7 @@ uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
     {
         publicExponent = (rand() % (phi - 999) ) + 999;
     }
+    std::cout << "Public exponent " << publicExponent << "\n";
     return publicExponent;
 }
 
@@ -157,13 +161,15 @@ uint32_t GenerationKeyPair::FindPrivateExponent(int64_t publicExponent, int64_t 
     {
         throw std::runtime_error("Phi and public exponent are not coprime! Impossible situation");
     }
-    uint32_t pe = (x%phi + phi) % phi;
-    return pe;
+    uint32_t privateExponent = (x%phi + phi) % phi;
+    std::cout << "Private exponent " << privateExponent << "\n";
+    return privateExponent;
 }
 
 Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
 {
     // TODO: maybe do concurrent
+    srand(time(0));
     primeNumber p = GenerateRandomPrimeNumber();
     primeNumber q = GenerateRandomPrimeNumber();
     while (p == q)
@@ -176,11 +182,11 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
     uint32_t privateExponent = FindPrivateExponent(publicExponent, phi);
 
     Key privateKey(privateExponent, n);
-    std::ofstream foutPrKey(m_privateKeyPath);
+    std::ofstream foutPrKey(m_privateKeyPath, std::ios_base::trunc);
     foutPrKey << EncodePrivateKey(privateKey);
     foutPrKey.close();
 
-    std::ofstream foutPubKey(m_publicKeyPath);
+    std::ofstream foutPubKey(m_publicKeyPath, std::ios_base::trunc);
     foutPubKey << publicExponent << ' ' << n;
     foutPubKey.close();
 

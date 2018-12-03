@@ -20,6 +20,7 @@ protected:
 
 protected:
     std::string m_filePath;
+    std::string m_signaturePath;
 };
 
 
