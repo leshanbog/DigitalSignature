@@ -9,7 +9,7 @@
 
 std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 {
-    std::cout << "Password while encoding " << m_password << "\n";
+    //std::cout << "Password while encoding " << m_password << "\n";
     std::string data = std::to_string(pk.exp) + " " + std::to_string(pk.n);
     std::string encodedPass = GammaChiper(m_password, PermutationChiperEncode(m_password, data));
     return encodedPass;
@@ -17,7 +17,7 @@ std::string PasswordNeeded::EncodePrivateKey(const Key& pk)
 
 Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 {
-    std::cout << "Password while decoding " << m_password << "\n";
+    //std::cout << "Password while decoding " << m_password << "\n";
 	std::string decodedKey = PermutationChiperDecode(m_password, GammaChiper(m_password, data));
 	int spaceIndex = decodedKey.find(" ");
 	if (spaceIndex == std::string::npos || spaceIndex == 0 || spaceIndex == decodedKey.size() - 1)
@@ -33,7 +33,7 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 		k.exp = 1;
 		k.n = 128;
 	}
-    std::cout << "Decoded private key " << k.exp << " " << k.n << "\n";
+    //std::cout << "Decoded private key " << k.exp << " " << k.n << "\n";
 	return k;
 }
 
@@ -110,7 +110,7 @@ primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
     {
         p = rand() % 32767 + 32769;
     }
-    std::cout << "Prime generated: " << p << std::endl;
+    //std::cout << "Prime generated: " << p << std::endl;
     return p;
 }
 
@@ -149,7 +149,7 @@ uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
     {
         publicExponent = (rand() % (phi - 999) ) + 999;
     }
-    std::cout << "Public exponent " << publicExponent << "\n";
+    //std::cout << "Public exponent " << publicExponent << "\n";
     return publicExponent;
 }
 
@@ -162,7 +162,7 @@ uint32_t GenerationKeyPair::FindPrivateExponent(int64_t publicExponent, int64_t 
         throw std::runtime_error("Phi and public exponent are not coprime! Impossible situation");
     }
     uint32_t privateExponent = (x%phi + phi) % phi;
-    std::cout << "Private exponent " << privateExponent << "\n";
+    //std::cout << "Private exponent " << privateExponent << "\n";
     return privateExponent;
 }
 
