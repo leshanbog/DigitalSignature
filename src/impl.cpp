@@ -23,10 +23,6 @@ ICommand* CreateCommand(const int& commandNumber, Arguments& args)
 }
 
 
-
-
-//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
-
 GenerateCommand::GenerateCommand(Arguments& args) : 
     GenerationKeyPair(args.m_password) {}
 

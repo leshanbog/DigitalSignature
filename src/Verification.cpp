@@ -14,20 +14,17 @@ std::string VerifyCommand::Do()
 {
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
-    //std::cout << "File hash " << fileHash.m_data[0] << " " << fileHash.m_data[1] << " " << fileHash.m_data[2] << "\n";
- 
 
     const auto signature = GetSignature();
-    //std::cout << "Read signature " << signature.m_data[0] << " " << signature.m_data[1] << " " << signature.m_data[2] << "\n";
+
     const Signature zeroSignature;
     if (signature == zeroSignature)
         return "Check your signature file!\n";
     const auto publicKey = GetPublicKey();
-    //std::cout << "Public key for verification " << publicKey.exp << " " << publicKey.n << "\n";
+
 
     // calculate preimage
     const Hash fileHashPreimage = signature.PowMod(publicKey.exp, publicKey.n);
-    //std::cout << "FileHash preimage " << fileHashPreimage.m_data[0] << " "<< fileHashPreimage.m_data[1] << " " << fileHashPreimage.m_data[2]<<"\n";
 
     if (fileHashPreimage == fileHash)
     {

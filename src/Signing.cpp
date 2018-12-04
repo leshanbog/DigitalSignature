@@ -10,19 +10,19 @@
 
 Signing::Signing(Arguments& args) :
     m_filePath(std::move(args.m_filePath))
-    {
-        m_signaturePath = MakeSignatureFileName();
-        std::cout << "Do you want to change signature file name from default " << m_signaturePath << "? ( y - yes, else no)\n";
-		char c;
-		std::cin.get(c);
-		std::cin.get(c);
-		if (c == 'y')
-		{
-			std::cout << "Write the name of signature file:\n";
-			std::cin >> m_signaturePath;
-		}
-		std::cout << std::endl;
-    }
+{
+    m_signaturePath = MakeSignatureFileName();
+    std::cout << "Do you want to change signature file name from default " << m_signaturePath << "? ( y - yes, else no)\n";
+	char c;
+	std::cin.get(c);
+	std::cin.get(c);
+	if (c == 'y')
+	{
+		std::cout << "Write the name of signature file:\n";
+		std::cin >> m_signaturePath;
+	}
+	std::cout << std::endl;
+}
 
 std::string Signing::MakeSignatureFileName()
 {
@@ -65,13 +65,11 @@ void Signing::PerformSigning()
     // TODO: reading file + calculating hash can be performed concurrently with obtaining key
     const auto fileCharacters = ReadFile();
     const Hash fileHash(fileCharacters);
-    //std::cout << "File hash " << fileHash.m_data[0] << " " << fileHash.m_data[1] << " " << fileHash.m_data[2] << "\n";
  
     Key pk = ObtainPrivateKey();
     
     // creating signature
     const Signature signature = fileHash.PowMod(pk.exp, pk.n);
-    //std::cout << "Resulted signature " << signature.m_data[0] << " " << signature.m_data[1] << " " << signature.m_data[2] << "\n";
  
     SaveSignature(signature);
 }
@@ -91,23 +89,11 @@ std::string SignNotGenerateCommand::Do()
 Key SignNotGenerateCommand::ObtainPrivateKey()
 {
     std::ifstream inputPrivateKey(m_privateKeyPath);
-    std::string encodedPrivateKey, cur;
-    getline(inputPrivateKey, encodedPrivateKey);
-	getline(inputPrivateKey, cur);
-	while (!cur.empty())
-	{
-		encodedPrivateKey += '\n';
-		encodedPrivateKey += cur;
-		cur = "";
-		getline(inputPrivateKey, cur);
-	}
-	
+    std::string encodedPrivateKey((std::istreambuf_iterator<char>(inputPrivateKey)), std::istreambuf_iterator<char>());	
     inputPrivateKey.close();
     auto pk = DecodePrivateKey(encodedPrivateKey);
     return pk;
 }
-
-
 
 
 SignAndGenerateCommand::SignAndGenerateCommand(Arguments& args) :

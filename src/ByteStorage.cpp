@@ -43,15 +43,15 @@ void ByteStorage::SignlePowMod(Byte a, uint32_t exp, uint32_t n, Byte* num) cons
 ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const
 {
     ByteStorage ans;
-    std::thread* threads[BYTE_STORAGE_SIZE];
+    std::thread threads[BYTE_STORAGE_SIZE];
     auto func = [&](Byte* num, int i) { this->SignlePowMod(this->m_data[i], exp,n,num); };
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
     {
-        threads[i] = new std::thread(func, &ans.m_data[i], i);
+        threads[i] = std::thread(func, &ans.m_data[i], i);
     }
     for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
     {
-        threads[i]->join();
+        threads[i].join();
     }
     return ans;
 }
