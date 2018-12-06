@@ -1,4 +1,3 @@
-set -x
 mkdir temp
 cp build/ds temp && cd temp
 doc=$1
@@ -84,4 +83,3 @@ sleep 1
 
 cd ..
 rm -r temp
-set +x

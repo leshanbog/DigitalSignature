@@ -34,7 +34,8 @@ protected:
     GenerationKeyPair(std::string& pass) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
-        PasswordNeeded(std::move(pass)) {
+        PasswordNeeded(std::move(pass))
+    {
 	// TODO: remove
 		std::cout << "Do you want to change file names in which keys will be generated? ( y - yes, else no)\n";
 		char c;
