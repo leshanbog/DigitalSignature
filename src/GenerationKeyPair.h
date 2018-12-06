@@ -39,6 +39,7 @@ protected:
 		std::cout << "Do you want to change file names in which keys will be generated? ( y - yes, else no)\n";
 		char c;
 		std::cin.get(c);
+		std::cin.get(c);
 		if (c == 'y')
 		{
 			std::cout << "Write the name of file for private key:\n";
