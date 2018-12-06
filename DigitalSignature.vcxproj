@@ -102,6 +102,7 @@
     <ClCompile Include="src\ByteStorage.cpp" />
     <ClCompile Include="src\GenerationKeyPair.cpp" />
     <ClCompile Include="src\impl.cpp" />
+    <ClCompile Include="src\InfInt.cpp" />
     <ClCompile Include="src\Signing.cpp" />
     <ClCompile Include="src\Verification.cpp" />
   </ItemGroup>
@@ -110,6 +111,7 @@
     <ClInclude Include="src\ByteStorage.h" />
     <ClInclude Include="src\GenerationKeyPair.h" />
     <ClInclude Include="src\impl.h" />
+    <ClInclude Include="src\InfInt.h" />
     <ClInclude Include="src\Signing.h" />
     <ClInclude Include="src\Verification.h" />
   </ItemGroup>

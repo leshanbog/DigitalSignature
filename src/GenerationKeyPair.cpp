@@ -19,7 +19,7 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 	std::string decodedKey = PermutationChiperDecode(m_password, GammaChiper(m_password, data));
 	int spaceIndex = decodedKey.find(" ");
 	if (spaceIndex == std::string::npos || spaceIndex == 0 || spaceIndex == decodedKey.size() - 1)
-		return { 0,0 };
+		throw std::runtime_error("Password phrase is incorrect");
 	Key k;
 	try
 	{
@@ -28,8 +28,7 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 	}
 	catch (...)
 	{
-		k.exp = 1;
-		k.n = 128;
+		throw std::runtime_error("Password phrase is incorrect");
 	}
 
 	return k;
@@ -138,11 +137,11 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
     return true;
 }
 
-uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
+InfInt GenerationKeyPair::ChoosePublicExponent(InfInt phi)
 {
     //return 65537;
     srand(time(0));
-    uint32_t publicExponent = (rand() % (phi - 999) ) + 999;
+	InfInt publicExponent = (rand() % (phi - 999) ) + 999;
     while (Gcd(publicExponent, phi) != 1)
     {
         publicExponent = (rand() % (phi - 999) ) + 999;
@@ -152,9 +151,9 @@ uint32_t GenerationKeyPair::ChoosePublicExponent(uint32_t phi)
 }
 
 
-uint32_t GenerationKeyPair::FindPrivateExponent(int64_t publicExponent, int64_t phi)
+InfInt GenerationKeyPair::FindPrivateExponent(InfInt publicExponent, InfInt phi)
 {
-    int64_t x,y;
+	InfInt x,y;
     if (exgcd(publicExponent, phi, x, y) != 1)
     {
         throw std::runtime_error("Phi and public exponent are not coprime! Impossible situation");
@@ -174,8 +173,8 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
     {
         q = GenerateRandomPrimeNumber();
     }
-    module n = p * q;
-    uint32_t phi = (p-1)*(q-1);
+    InfInt n = p * q;
+    InfInt phi = (p-1)*(q-1);
     uint32_t publicExponent = ChoosePublicExponent(phi);
     uint32_t privateExponent = FindPrivateExponent(publicExponent, phi);
 

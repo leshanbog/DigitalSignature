@@ -6,8 +6,7 @@
 #include <string>
 #include <iostream>
 
-typedef uint16_t primeNumber;
-typedef uint32_t module;
+typedef InfInt primeNumber;
 
 class PasswordNeeded
 {
@@ -55,8 +54,8 @@ protected:
 
     primeNumber GenerateRandomPrimeNumber();
     bool IsPrime(const primeNumber& p);
-    uint32_t ChoosePublicExponent(uint32_t phi);
-    uint32_t FindPrivateExponent(int64_t publicExponent, int64_t phi);
+    InfInt ChoosePublicExponent(InfInt phi);
+	InfInt FindPrivateExponent(InfInt publicExponent, InfInt phi);
     Key PerformGenerationAndGetPrivateKey();
 
    template <typename T>

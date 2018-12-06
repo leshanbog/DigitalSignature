@@ -1,10 +1,13 @@
 #pragma once
 
+#include "InfInt.h"
+
 #include <fstream>
 #include <vector>
 
 // TODO: delete
 #include <iostream>
+
 
 typedef uint32_t Byte;
 
