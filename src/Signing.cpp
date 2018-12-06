@@ -21,7 +21,7 @@ Signing::Signing(Arguments& args) :
 			std::cout << "Write the name of signature file:\n";
 			std::cin >> m_signaturePath;
 		}
-		std::cout << "signing started..." << std::endl;
+		std::cout << std::endl;
     }
 
 std::string Signing::MakeSignatureFileName()
