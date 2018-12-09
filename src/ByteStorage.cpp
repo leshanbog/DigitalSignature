@@ -24,23 +24,31 @@ ByteStorage::ByteStorage(const std::vector<unsigned char>& stream)
         auto h = hasher(stream[i]);
 		m_data[i % BYTE_STORAGE_SIZE] ^= h;
     }
-    // hash must be smaller then module (n = p*q)
-    for (size_t i = 0; i < BYTE_STORAGE_SIZE; ++i)
-       m_data[i] = ((m_data[i] << 2) >> 2);
 }
 
-void ByteStorage::SignlePowMod(Byte a, uint32_t exp, uint32_t n, Byte* num) const
+void ByteStorage::SignlePowMod(Byte a, InfInt exp, InfInt n, Byte* num) const
 {
-    uint64_t power = 1;
-    uint64_t factor = a;
-    for (uint32_t i = 0; i < exp; ++i)
-    {
-        power = (power * factor) % n;
-    }
-    *num = static_cast<Byte>(power);
+	InfInt power = 1;
+	InfInt factor = a;
+    
+	while (exp != 0)
+	{
+		if (exp % 2 == 0)
+		{
+			factor = (factor * factor) % n;
+			exp /= 2;
+		}
+		else
+		{
+			power *= static_cast<InfInt>(factor) % n;
+			--exp;
+		}
+	}
+	power %= n;
+    *num = static_cast<Byte>(power.toUnsignedLongLong());
 }
 
-ByteStorage ByteStorage::PowMod(uint32_t exp, uint32_t n) const
+ByteStorage ByteStorage::PowMod(InfInt exp, InfInt n) const
 {
     ByteStorage ans;
     std::thread threads[BYTE_STORAGE_SIZE];

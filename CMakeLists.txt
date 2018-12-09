@@ -10,7 +10,6 @@ set(SOURCES
 	src/Signing.cpp
 	src/Verification.cpp
 	src/ByteStorage.cpp
-	src/InfInt.cpp
 )
 
 set(CMAKE_CXX_STANDARD 14)

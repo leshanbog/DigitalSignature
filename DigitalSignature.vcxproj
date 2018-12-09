@@ -102,7 +102,6 @@
     <ClCompile Include="src\ByteStorage.cpp" />
     <ClCompile Include="src\GenerationKeyPair.cpp" />
     <ClCompile Include="src\impl.cpp" />
-    <ClCompile Include="src\InfInt.cpp" />
     <ClCompile Include="src\Signing.cpp" />
     <ClCompile Include="src\Verification.cpp" />
   </ItemGroup>

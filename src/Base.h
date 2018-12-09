@@ -16,10 +16,10 @@ struct Arguments
 
 struct Key
 {
-    Key(uint32_t _exp = 1, uint32_t _n = 128) :
+    Key(InfInt _exp = 1, InfInt _n = 128) :
         exp(_exp), n(_n) {}
-    uint32_t exp;
-    uint32_t n;
+	InfInt exp;
+	InfInt n;
 };
 
 

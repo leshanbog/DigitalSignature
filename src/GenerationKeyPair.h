@@ -33,11 +33,13 @@ protected:
     GenerationKeyPair(std::string& pass) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
-        PasswordNeeded(std::move(pass))
+        PasswordNeeded(std::move(pass)),
+		m_keySize(12)
     {
 	// TODO: remove
 		std::cout << "Do you want to change file names in which keys will be generated? ( y - yes, else no)\n";
 		char c;
+		std::cin.get(c);
 		std::cin.get(c);
 		if (c == 'y')
 		{
@@ -51,6 +53,7 @@ protected:
 
     std::string m_privateKeyPath;
     std::string m_publicKeyPath;
+	size_t m_keySize;
 
     primeNumber GenerateRandomPrimeNumber();
     bool IsPrime(const primeNumber& p);
@@ -84,3 +87,4 @@ protected:
         return a;
     }
 };
+

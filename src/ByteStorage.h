@@ -19,8 +19,7 @@ struct ByteStorage
     ByteStorage(const std::vector<unsigned char>& stream);
     ByteStorage();
 
-    ByteStorage PowMod(uint32_t exp, uint32_t n) const;
-    void SignlePowMod(Byte a, uint32_t exp, uint32_t n, Byte* num) const;
+    ByteStorage PowMod(InfInt exp, InfInt n) const;
 
     bool operator==(const ByteStorage& other) const;
 
@@ -28,6 +27,8 @@ struct ByteStorage
     friend std::ifstream& operator>>(std::ifstream& is, ByteStorage& bs);
 
 	Byte m_data[BYTE_STORAGE_SIZE];
+private:
+	void SignlePowMod(Byte a, InfInt exp, InfInt n, Byte* num) const;
 };
 
 
