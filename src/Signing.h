@@ -3,7 +3,6 @@
 #include "GenerationKeyPair.h"
 
 
-
 class Signing : public ICommand
 {
 protected:

@@ -3,7 +3,6 @@
 
 #include "Base.h"
 
-#include <string>
 #include <iostream>
 
 typedef InfInt primeNumber;
@@ -36,8 +35,7 @@ protected:
         PasswordNeeded(std::move(pass)),
 		m_keySize(12)
     {
-	// TODO: remove
-		std::cout << "Do you want to change file names in which keys will be generated? ( y - yes, else no)\n";
+		std::cout << "Do you want to change default file names in which keys will be generated?  (y - yes, else no)\n";
 		char c;
 		std::cin.get(c);
 		std::cin.get(c);
@@ -48,7 +46,7 @@ protected:
 			std::cout << "Write the name of file for public key:\n";
 			std::cin >> m_publicKeyPath;
 		}
-		std::cout << "generating keys..." << std::endl;
+		std::cout << "ok..." << std::endl;
 	};
 
     std::string m_privateKeyPath;
@@ -62,12 +60,12 @@ protected:
     Key PerformGenerationAndGetPrivateKey();
 
    template <typename T>
-    T exgcd (T a, T b, T& x, T& y) {
+    T Exgcd(T a, T b, T& x, T& y) {
 	if (b == 0) {
 		x = 1; y = 9;
 		return a;
 	}
-        T g = exgcd (b, a%b, x, y);
+        T g = Exgcd(b, a%b, x, y);
         T tx = x;
         x = y;
         y = tx - (a/b) * x;
@@ -78,7 +76,7 @@ protected:
     T Gcd(T a, T b)
     {
         T c;
-        while (b)
+        while (b != 0)
         {
             c = a % b;
             a = b;

@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 		}
 		catch (std::exception& e)
 		{
-			std::cout << "Error:" << e.what() << '\n';
+			std::cout << "Error:\t" << e.what() << '\n';
 		}
 	}
 	else // Dialog mode (temporary)
@@ -213,5 +213,3 @@ int main(int argc, char *argv[])
     std::cout << '\n';
     return 0;
 }
-
-// TODO: add concurrency

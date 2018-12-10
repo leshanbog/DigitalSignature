@@ -13,13 +13,16 @@ struct Arguments
     std::string m_password;
 };
 
-
 struct Key
 {
     Key(InfInt _exp = 1, InfInt _n = 128) :
         exp(_exp), n(_n) {}
 	InfInt exp;
 	InfInt n;
+    bool operator==(const Key& other) const
+    {
+        return this->exp == other.exp && this->n == other.n;
+    }
 };
 
 

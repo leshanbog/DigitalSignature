@@ -1,9 +1,8 @@
 #include "GenerationKeyPair.h"
 
 #include <random>
-#include <fstream>
-#include <functional>
 #include <map>
+#include <thread>
 #include <time.h>
 
 const static InfInt g_firstPrimes[] = {
@@ -53,6 +52,8 @@ Key PasswordNeeded::DecodePrivateKey(const std::string& data)
 	{
 		k.exp = static_cast<InfInt>(decodedKey.substr(0, spaceIndex));
 		k.n = static_cast<InfInt>(decodedKey.substr(spaceIndex + 1, data.size() - spaceIndex - 1));
+        if (k.exp == 0 || k.n == 0)
+            throw std::runtime_error("Password phrase is incorrect");
 	}
 	catch (...)
 	{
@@ -130,12 +131,13 @@ std::string PasswordNeeded::PermutationChiperEncode(const std::string key, const
 
 primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
 {
+    srand(time(0));
 	std::string prime(m_keySize, '0');
 	InfInt p;
 	do
 	{
-		std::cout << p << " is not prime(\n";
-		for (uint32_t i = 0; i < m_keySize; ++i)
+        prime[0] = '1' + (rand() % 9);
+		for (uint32_t i = 1; i < m_keySize; ++i)
 		{
 			prime[i] = '0' + (rand() % 10);
 		}
@@ -156,7 +158,6 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
 			return false;
 	}
 
-	return true;
     InfInt l = p.intSqrt() + 1;
     for (InfInt d = 2081; d < l; d += 2)
     {
@@ -168,24 +169,22 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
 
 InfInt GenerationKeyPair::ChoosePublicExponent(InfInt phi)
 {
-    return 65537;
-	/*
+    //return 65537;
     srand(time(0));
-	InfInt publicExponent = (rand() % (phi - 999) ) + 999;
+	InfInt publicExponent = rand();
     while (Gcd(publicExponent, phi) != 1)
     {
-        publicExponent = (rand() % (phi - 999) ) + 999;
+        publicExponent = rand();
     }
 
     return publicExponent;
-	*/
 }
 
 
 InfInt GenerationKeyPair::FindPrivateExponent(InfInt publicExponent, InfInt phi)
 {
 	InfInt x,y;
-    if (exgcd(publicExponent, phi, x, y) != 1)
+    if (Exgcd(publicExponent, phi, x, y) != 1)
     {
         throw std::runtime_error("Phi and public exponent are not coprime! Impossible situation");
     }
@@ -196,14 +195,21 @@ InfInt GenerationKeyPair::FindPrivateExponent(InfInt publicExponent, InfInt phi)
 
 Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
 {
-    // TODO: maybe do concurrent
-    srand(time(0));
-    primeNumber p = GenerateRandomPrimeNumber();
-    primeNumber q = GenerateRandomPrimeNumber();
+    auto genPrimeConcur = [this](primeNumber* pr) -> void
+    {
+        *pr = this->GenerateRandomPrimeNumber();
+    };
+
+    primeNumber p, q;
+    std::thread t1(genPrimeConcur, &p), t2(genPrimeConcur, &q);
+    t1.join();
+    t2.join();
+
     while (p == q)
     {
         q = GenerateRandomPrimeNumber();
     }
+
     InfInt n = p * q;
     InfInt phi = (p-1)*(q-1);
 	InfInt publicExponent = ChoosePublicExponent(phi);

@@ -16,12 +16,14 @@ std::string VerifyCommand::Do()
     const Hash fileHash(fileCharacters);
 
     const auto signature = GetSignature();
-
     const Signature zeroSignature;
     if (signature == zeroSignature)
         return "Check your signature file!\n";
-    const auto publicKey = GetPublicKey();
 
+    const Key publicKey = GetPublicKey();
+    const Key zeroKey;
+    if (publicKey == zeroKey)
+        return "Check your public key!\n";
 
     // calculate preimage
     const Hash fileHashPreimage = signature.PowMod(publicKey.exp, publicKey.n);
@@ -34,7 +36,6 @@ std::string VerifyCommand::Do()
     {
         return "Signature is not valid!\nVerification done";
     }
-
 }
 
 Key VerifyCommand::GetPublicKey()
@@ -59,9 +60,11 @@ std::vector<unsigned char> VerifyCommand::ReadFile()
 {
     try
     {
-        std::ifstream fileToVerify(m_filePath, std::ios::binary);
-        const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToVerify), (std::istreambuf_iterator<char>()));
-        fileToVerify.close();
+        std::ifstream fileToSign(m_filePath, std::ios::binary);
+        const std::vector<unsigned char> fileCharacters(std::istreambuf_iterator<char>(fileToSign), (std::istreambuf_iterator<char>()));
+        fileToSign.close();
+		if (fileCharacters.empty())
+			throw std::runtime_error("File is empty!\n");
         return fileCharacters;
     }
     catch (std::bad_alloc& err)

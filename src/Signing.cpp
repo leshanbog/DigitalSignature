@@ -1,18 +1,13 @@
 #include "Signing.h"
 
 
-#include <fstream>
-#include <vector>
-
-// TODO: delete
-#include <iostream>
-
+#include <thread>
 
 Signing::Signing(Arguments& args) :
     m_filePath(std::move(args.m_filePath))
 {
     m_signaturePath = MakeSignatureFileName();
-    std::cout << "Do you want to change signature file name from default " << m_signaturePath << "? ( y - yes, else no)\n";
+    std::cout << "Do you want to change default signature file name from  " << m_signaturePath << "?  (y - yes, else no)\n";
 	char c;
 	std::cin.get(c);
 	std::cin.get(c);
@@ -21,16 +16,14 @@ Signing::Signing(Arguments& args) :
 		std::cout << "Write the name of signature file:\n";
 		std::cin >> m_signaturePath;
 	}
-	std::cout << std::endl;
+    std::cout << "ok..." << std::endl;
 }
 
 std::string Signing::MakeSignatureFileName()
 {
     std::string extension = "";
-    int end = m_filePath.size() - 1;
-    while (end >= 0 && m_filePath[end] != '.')
-        --end;
-    if (end < 0)
+    int end = m_filePath.find_last_of('.');
+    if (end == std::string::npos)
         return m_filePath + "_signature";
     else
         return m_filePath.substr(0, end) + "_signature";
@@ -62,16 +55,47 @@ void Signing::SaveSignature(const Signature& signature)
 
 void Signing::PerformSigning()
 {
-    // TODO: reading file + calculating hash can be performed concurrently with obtaining key
-    const auto fileCharacters = ReadFile();
-    const Hash fileHash(fileCharacters);
- 
-    Key pk = ObtainPrivateKey();
-    
+    Hash fileHash;
+    Key pk;
+    std::exception_ptr eptr = nullptr;
+
+    std::thread t1([this, &fileHash, &eptr]() -> void
+    {
+        try
+        {
+            const auto fileCharacters = ReadFile();
+            fileHash = Hash(fileCharacters);
+        }
+        catch (...)
+        {
+            eptr = std::current_exception();
+        }
+    });
+        
+    std::thread t2([this, &pk, &eptr]() -> void
+    {
+        try
+        {
+            pk = ObtainPrivateKey();
+        }
+        catch (...)
+        {
+            eptr = std::current_exception();
+        }
+    }); 
+        
+    t1.join();
+    t2.join();
+
+    if (eptr) 
+        std::rethrow_exception(eptr); 
+
     // creating signature
     const Signature signature = fileHash.PowMod(pk.exp, pk.n);
- 
+    
     SaveSignature(signature);
+
+
 }
 
 

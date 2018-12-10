@@ -3,9 +3,6 @@
 #include "Signing.h"
 #include "Verification.h"
 
-#include <string>
-
-
 ICommand* CreateCommand(const int& commandNumber, Arguments& args);
 
 

@@ -7,9 +7,9 @@ set(SOURCES
 	main.cpp
 	src/impl.cpp
 	src/GenerationKeyPair.cpp
+	src/ByteStorage.cpp
 	src/Signing.cpp
 	src/Verification.cpp
-	src/ByteStorage.cpp
 )
 
 set(CMAKE_CXX_STANDARD 14)

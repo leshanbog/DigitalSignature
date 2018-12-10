@@ -66,7 +66,7 @@ echo "11" > my_test
 
 echo "pas.5 pas.5" | ./ds sign my_test
 ./ds verify my_test my_test_signature publickey
-printf "\nTEST: Signature must be VALID\n\n\n'n"
+printf "\nTEST: Signature must be VALID\n\n\n\n"
 sleep 1
 
 
