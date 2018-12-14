@@ -55,6 +55,8 @@ protected:
 
     primeNumber GenerateRandomPrimeNumber();
     bool IsPrime(const primeNumber& p);
+    bool IsFermatTest(const primeNumber& p);
+    bool IsMillerRabinTest(const primeNumber& p, primeNumber& d);
     InfInt ChoosePublicExponent(InfInt phi);
 	InfInt FindPrivateExponent(InfInt publicExponent, InfInt phi);
     Key PerformGenerationAndGetPrivateKey();

@@ -4,6 +4,7 @@
 #include <map>
 #include <thread>
 #include <time.h>
+#include <algorithm>
 
 const static InfInt g_firstPrimes[] = {
 2,	    3,	    5,	    7,	    11,	    13,	    17,	    19,	    23,	    29,	    31,	    37,
@@ -150,6 +151,44 @@ primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
     return p;
 }
 
+bool GenerationKeyPair::IsFermatTest(const primeNumber& p)
+{
+    InfInt lim = 4294965213;
+    uint32_t M = std::min(p-2081, lim).toUnsignedInt();
+    InfInt a = (rand() % M) + 2081;
+    ByteStorage t;
+    t.m_data=a;
+    if (t.PowMod(p-1,p).m_data != 1)
+        return false;
+    return true;
+}
+
+
+bool GenerationKeyPair::IsMillerRabinTest(const primeNumber& p, primeNumber& d)
+{
+    InfInt lim = 4294965213;
+    uint32_t M = std::min(p-2081, lim).toUnsignedInt();
+    InfInt a = (rand() % M) + 2081;
+    ByteStorage t;
+    t.m_data=a;
+    t = t.PowMod(d, p);
+    if (t.m_data == 1 || t.m_data == p-1)
+        return true;
+    
+    a = t.m_data;
+    while (d != p-1)
+    {
+        a = (a * a) % p;
+        d *= 2;
+        if (a == 1)
+            return false;
+        if (a == p - 1)
+            return true;
+    }
+    return false;
+}
+
+
 bool GenerationKeyPair::IsPrime(const primeNumber& p)
 {
 	for (int i = 0; i < 312; ++i)
@@ -158,6 +197,24 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
 			return false;
 	}
 
+    // Fermat test
+    for (int k = 0; k < 10; ++k)
+    {
+        if (!IsFermatTest(p))
+            return false;
+    }
+
+    // Miller–Rabin test
+    InfInt d = p-1;
+    while (d % 2 == 0)
+        d/=2;
+    for (int k = 0; k < 5; ++k)
+    {
+        if (!IsMillerRabinTest(p, d))
+            return false;
+    }
+
+    return true;
     InfInt l = p.intSqrt() + 1;
     for (InfInt d = 2081; d < l; d += 2)
     {
