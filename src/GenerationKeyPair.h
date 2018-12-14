@@ -7,6 +7,10 @@
 
 typedef InfInt primeNumber;
 
+const InfInt MAX_BOUND = 4294965211;
+const int FERMAT_TEST_NUMBER_ROUNDS = 25;
+const int MILLER_RABIN_TEST_NUMBER_ROUNDS = 25;
+
 class PasswordNeeded
 {
 protected:

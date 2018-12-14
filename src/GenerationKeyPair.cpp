@@ -153,8 +153,7 @@ primeNumber GenerationKeyPair::GenerateRandomPrimeNumber()
 
 bool GenerationKeyPair::IsFermatTest(const primeNumber& p)
 {
-    InfInt lim = 4294965213;
-    uint32_t M = std::min(p-2081, lim).toUnsignedInt();
+    uint32_t M = std::min(p - 2081, MAX_BOUND).toUnsignedInt();
     InfInt a = (rand() % M) + 2081;
     ByteStorage t;
     t.m_data=a;
@@ -166,8 +165,7 @@ bool GenerationKeyPair::IsFermatTest(const primeNumber& p)
 
 bool GenerationKeyPair::IsMillerRabinTest(const primeNumber& p, primeNumber& d)
 {
-    InfInt lim = 4294965213;
-    uint32_t M = std::min(p-2081, lim).toUnsignedInt();
+    uint32_t M = std::min(p - 2081, MAX_BOUND).toUnsignedInt();
     InfInt a = (rand() % M) + 2081;
     ByteStorage t;
     t.m_data=a;
@@ -198,7 +196,7 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
 	}
 
     // Fermat test
-    for (int k = 0; k < 10; ++k)
+    for (int k = 0; k < FERMAT_TEST_NUMBER_ROUNDS; ++k)
     {
         if (!IsFermatTest(p))
             return false;
@@ -208,19 +206,12 @@ bool GenerationKeyPair::IsPrime(const primeNumber& p)
     InfInt d = p-1;
     while (d % 2 == 0)
         d/=2;
-    for (int k = 0; k < 5; ++k)
+    for (int k = 0; k < MILLER_RABIN_TEST_NUMBER_ROUNDS; ++k)
     {
         if (!IsMillerRabinTest(p, d))
             return false;
     }
 
-    return true;
-    InfInt l = p.intSqrt() + 1;
-    for (InfInt d = 2081; d < l; d += 2)
-    {
-        if (p % d == 0)
-            return false;
-    }
     return true;
 }
 
