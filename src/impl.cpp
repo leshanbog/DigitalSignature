@@ -21,7 +21,7 @@ ICommand* CreateCommand(const int& commandNumber, Arguments& args)
 
 
 GenerateCommand::GenerateCommand(Arguments& args) : 
-    GenerationKeyPair(args.m_password) {}
+    GenerationKeyPair(args.m_password, args.m_numberOfDigits) {}
 
 std::string GenerateCommand::Do()
 {

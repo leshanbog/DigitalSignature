@@ -39,13 +39,13 @@ void SetStdinEcho(bool enable = true)
 #endif
 }
 
-std::string GetUserPassword(bool f)
+std::string GetUserPassword(bool needConfirmation)
 {
     SetStdinEcho(false);
 
     std::string password1, password2;
 
-	if (f)
+	if (needConfirmation)
 	{
 		while (true)
 		{
@@ -81,19 +81,45 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
     
     if (strcmp(argv[1], "sign") == 0)
     {
-        if (argc != 3 && argc != 5)
+        if (argc != 3 && argc != 5 && argc != 7)
             return false;
-        argc == 3 ? command = 1 : command = 2;
         args.m_filePath = argv[2];
-		if (argc == 3)
-			args.m_password = GetUserPassword(true);
-		else
-			args.m_password = GetUserPassword(false);
+		bool prKeyProvided = false;
 
-        if (argc == 5)
-        {
-            args.m_privateKeyPath = argv[4];
-        }
+		if (argc > 3)
+		{
+			if (strcmp(argv[3], "--pr") == 0)
+			{
+				args.m_privateKeyPath = argv[4];
+				prKeyProvided = true;
+			}			
+			else
+			{
+				args.m_numberOfDigits = atoi(argv[4]);
+			}
+
+			if (argc == 7)
+			{
+				if (strcmp(argv[5], "--pr") == 0)
+				{
+					args.m_privateKeyPath = argv[6];
+					prKeyProvided = true;
+				}			
+				else
+				{
+					args.m_numberOfDigits = atoi(argv[6]);
+
+				}
+			}
+		}
+
+		if (args.m_numberOfDigits < 6)
+		{
+			std::cout << "Number of digits is too small, 6 will be used!\n";
+			args.m_numberOfDigits = 6;
+		}	
+		args.m_password = GetUserPassword(!prKeyProvided);
+		prKeyProvided ? command = 2 : command = 1;
     }
     else if (strcmp(argv[1], "verify") == 0)
     {
@@ -107,8 +133,17 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
     else if (strcmp(argv[1], "generate") == 0)
     {
         command = 4;
-        if (argc != 2)
+        if (argc != 2 && argc != 4)
             return false;
+		if (argc == 4)
+		{
+			args.m_numberOfDigits = atoi(argv[3]);
+			if (args.m_numberOfDigits < 6)
+			{
+				std::cout << "Number of digits is too small, 6 will be used!\n";
+				args.m_numberOfDigits = 6;
+			}
+		}
         args.m_password = GetUserPassword(true);
     }
     else if (strcmp(argv[1], "help") != 0)

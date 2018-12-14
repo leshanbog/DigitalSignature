@@ -29,11 +29,11 @@ protected:
 class GenerationKeyPair : public PasswordNeeded
 {
 protected:
-    GenerationKeyPair(std::string& pass) : 
+    GenerationKeyPair(std::string& pass, int num) : 
         m_privateKeyPath("privatekey"),
         m_publicKeyPath("publickey"),
         PasswordNeeded(std::move(pass)),
-		m_keySize(12)
+		m_keySize(num)
     {
 		std::cout << "Do you want to change default file names in which keys will be generated?  (y - yes, else no)\n";
 		char c;

@@ -6,11 +6,13 @@
 
 struct Arguments
 {
+    Arguments() : m_numberOfDigits(6) {}
     std::string m_filePath;
     std::string m_signatureFilePath;
     std::string m_privateKeyPath;
     std::string m_publicKeyPath;
     std::string m_password;
+    int m_numberOfDigits;
 };
 
 struct Key

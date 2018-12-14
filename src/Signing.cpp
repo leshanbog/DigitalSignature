@@ -122,7 +122,7 @@ Key SignNotGenerateCommand::ObtainPrivateKey()
 
 SignAndGenerateCommand::SignAndGenerateCommand(Arguments& args) :
     Signing(args),
-    GenerationKeyPair(args.m_password) {}
+    GenerationKeyPair(args.m_password, args.m_numberOfDigits) {}
 
 std::string SignAndGenerateCommand::Do()
 {
