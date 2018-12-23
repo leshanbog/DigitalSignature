@@ -111,7 +111,7 @@ std::string SignNotGenerateCommand::Do()
 
 Key SignNotGenerateCommand::ObtainPrivateKey()
 {
-    std::ifstream inputPrivateKey(m_privateKeyPath);
+    std::ifstream inputPrivateKey(m_privateKeyPath, std::ios::binary);
     std::string encodedPrivateKey((std::istreambuf_iterator<char>(inputPrivateKey)), std::istreambuf_iterator<char>());	
     inputPrivateKey.close();
     auto pk = DecodePrivateKey(encodedPrivateKey);

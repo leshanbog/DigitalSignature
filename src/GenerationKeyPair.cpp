@@ -264,7 +264,7 @@ Key GenerationKeyPair::PerformGenerationAndGetPrivateKey()
 	InfInt privateExponent = FindPrivateExponent(publicExponent, phi);
 
     Key privateKey(privateExponent, n);
-    std::ofstream foutPrKey(m_privateKeyPath, std::ios_base::trunc);
+    std::ofstream foutPrKey(m_privateKeyPath, std::ios_base::trunc | std::ios_base::binary);
     foutPrKey << EncodePrivateKey(privateKey);
     foutPrKey.close();
 
