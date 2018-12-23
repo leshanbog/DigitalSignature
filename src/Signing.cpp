@@ -8,10 +8,9 @@ Signing::Signing(Arguments& args) :
 {
     m_signaturePath = MakeSignatureFileName();
     std::cout << "Do you want to change default signature file name from  " << m_signaturePath << "?  (y - yes, else no)\n";
-	char c;
-	std::cin.get(c);
-	std::cin.get(c);
-	if (c == 'y')
+	std::string c;
+	std::cin >> c;
+	if (c == "y")
 	{
 		std::cout << "Write the name of signature file:\n";
 		std::cin >> m_signaturePath;

@@ -40,10 +40,9 @@ protected:
 		m_keySize(num)
     {
 		std::cout << "Do you want to change default file names in which keys will be generated?  (y - yes, else no)\n";
-		char c;
-		std::cin.get(c);
-		std::cin.get(c);
-		if (c == 'y')
+		std::string c;
+		std::cin >> c;
+		if (c == "y")
 		{
 			std::cout << "Write the name of file for private key:\n";
 			std::cin >> m_privateKeyPath;
@@ -91,4 +90,3 @@ protected:
         return a;
     }
 };
-
