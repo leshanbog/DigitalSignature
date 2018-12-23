@@ -81,36 +81,23 @@ bool Parse(int argc, char *argv[], int& command, Arguments& args)
     
     if (strcmp(argv[1], "sign") == 0)
     {
-        if (argc != 3 && argc != 5 && argc != 7)
+        if (argc != 3 && argc != 5)
             return false;
         args.m_filePath = argv[2];
 		bool prKeyProvided = false;
 
-		if (argc > 3)
+		if (strcmp(argv[3], "--pr") == 0)
 		{
-			if (strcmp(argv[3], "--pr") == 0)
-			{
-				args.m_privateKeyPath = argv[4];
-				prKeyProvided = true;
-			}			
-			else
-			{
-				args.m_numberOfDigits = atoi(argv[4]);
-			}
-
-			if (argc == 7)
-			{
-				if (strcmp(argv[5], "--pr") == 0)
-				{
-					args.m_privateKeyPath = argv[6];
-					prKeyProvided = true;
-				}			
-				else
-				{
-					args.m_numberOfDigits = atoi(argv[6]);
-
-				}
-			}
+			args.m_privateKeyPath = argv[4];
+			prKeyProvided = true;
+		}			
+		else if (strcmp(argv[3], "--l") == 0)
+		{
+			args.m_numberOfDigits = atoi(argv[4]);
+		}
+		else
+		{
+			return false;
 		}
 
 		if (args.m_numberOfDigits < 6)
